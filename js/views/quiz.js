@@ -10,12 +10,12 @@
    ========================================================================== */
 
 import { el, humanDue, shuffle } from '../util.js';
-import { listDecks, listCards, getDeck, getSettings } from '../store.js';
+import { listDecks, listCards, getDeck, getSettings, deckAward } from '../store.js';
 import { GRADE, forgeStage, previewIntervals } from '../fsrs.js';
 import { buildQueue, buildTask, gradeAnswer, applyGrade, requeue, KIND_LABEL } from '../session.js';
 import { speak, speechAvailable, sfx, buzz, sparks, hit } from '../fx.js';
-import { t, stageName } from '../themes.js';
-import { bar, empty, stageDots, toast } from '../ui.js';
+import { t, stageName, award } from '../themes.js';
+import { bar, empty, stageDots, toast, medal } from '../ui.js';
 import { navigate } from '../router.js';
 import { attachSwipe } from '../gesture.js';
 import { deckPicker, ALL_DECKS } from './learn.js';
@@ -75,6 +75,10 @@ function sessionView(deck) {
     const retries = new Map();
     const MAX_RETRIES = 2;
     let index = 0;
+
+    // Auszeichnungsstand vor der Sitzung merken, um Aufstiege zu feiern.
+    const decksInPlay = [...new Set(queue.map((c) => c.deckId))];
+    const awardsBefore = new Map(decksInPlay.map((id) => [id, deckAward(id)]));
 
     const head = el('div.quiz-head');
     const progressBar = bar(0);
@@ -188,6 +192,23 @@ function sessionView(deck) {
       const secs = Math.round((Date.now() - stats.startedAt) / 1000);
       const quote = stats.done ? Math.round((stats.right / stats.done) * 100) : 0;
       root.innerHTML = '';
+
+      // Neue Auszeichnungen zuerst – das ist die eigentliche Belohnung.
+      for (const id of decksInPlay) {
+        const now = deckAward(id);
+        const before = awardsBefore.get(id) ?? 0;
+        if (now <= before) continue;
+        const a = award(now);
+        if (!a) continue;
+        const deckName = getDeck(id)?.name || '';
+        root.append(el('div.award-banner', {},
+          medal(a),
+          el('div.award-banner__text', {},
+            el('b', {}, a.name),
+            el('span.small.muted', {}, `${deckName}: jede Vokabel steht jetzt auf ${stageName(now)}.`))));
+      }
+      const celebrate = root.querySelector('.award-banner');
+
       root.append(el('section.panel.center', {},
         el('h1', {}, t('done')),
         el('div.stat-grid', { style: 'margin:12px 0' },
@@ -200,8 +221,12 @@ function sessionView(deck) {
         el('div.row', { style: 'justify-content:center; margin-top:12px' },
           el('button.btn.btn--primary', { onclick: () => navigate('/') }, 'Fertig'),
           el('button.btn', { onclick: () => { const q = buildQueue({ deckIds, limit: getSettings().sessionSize }); if (q.length) start(q, false); else toast('Für heute ist alles erledigt.'); } }, 'Noch eine Runde'))));
-      sparks(root.querySelector('.panel'), 26);
+      sparks(celebrate || root.querySelector('.panel'), celebrate ? 44 : 26);
       sfx('good');
+      if (celebrate) {
+        buzz([30, 60, 30, 60, 60]);
+        setTimeout(() => { sparks(celebrate, 30); sfx('good'); }, 380);
+      }
     }
 
     function confirmQuit() {

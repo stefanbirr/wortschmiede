@@ -18,12 +18,16 @@ Ergebnis einfügen.
 1. **Foto** von der Vokabelseite im Lehrbuch machen.
 2. In der App unter **Import** den **Prompt kopieren** (er ist auf die gewählten Sprachen zugeschnitten).
 3. Prompt + Foto in **Gemini, ChatGPT oder Claude** geben – die kostenlosen Versionen reichen.
-4. Die Antwort kopieren und in der App ins Feld einfügen. Fertig.
+4. Die KI legt eine **JSON-Datei** an, die man herunterlädt.
+5. Datei in der App auswählen. Fertig.
 
-Der Import ist absichtlich nachsichtig: Er versteht sauberes JSON, JSON in
-Markdown-Blöcken, blanke Arrays, deutsche Feldnamen und notfalls auch eine simple
-Liste `Wort – Übersetzung` oder eine Markdown-Tabelle. Details und der Prompt zum
-Nachlesen: [docs/PROMPT.md](docs/PROMPT.md).
+Der Weg über die Datei ist der zuverlässigste: Beim Kopieren aus einem Chatfenster
+werden gern gerade Anführungszeichen zu typografischen, und dann ist das JSON
+kaputt. Kann ein Werkzeug keine Dateien erzeugen, geht es weiterhin über
+Einfügen – der Import ist absichtlich nachsichtig und versteht JSON in
+Markdown-Blöcken, blanke Arrays, deutsche Feldnamen, krumme Anführungszeichen und
+notfalls auch eine simple Liste `Wort – Übersetzung` oder eine Markdown-Tabelle.
+Details und der Prompt zum Nachlesen: [docs/PROMPT.md](docs/PROMPT.md).
 
 ## Die zwei Lernmodi
 
@@ -43,6 +47,18 @@ keine Bewertung. Wer eine Vokabel schon kann, markiert sie mit *Sitzt schon* und
 | **Hören** | gelegentlich | Aussprache mit dem Wort koppeln |
 
 Richtig getroffen gibt Funken und einen Hammerschlag, daneben zerschneidet die Karte.
+
+Bei Latein und Altgriechisch dreht sich die Richtung um: Dort wird ins Deutsche
+übersetzt statt in die Zielsprache geschrieben. Das wird beim Import aus der
+Sprache vorbelegt und lässt sich pro Deck ändern.
+
+## Auszeichnungen
+
+Steht **jede** Vokabel eines Decks auf einer Stufe, gibt es dafür eine
+Auszeichnung – vom Kupfer- bis zum Mithrilbarren. Es zählt die schwächste Karte:
+Eine einzige vergessene Vokabel hält das ganze Deck auf, sonst wäre die
+Auszeichnung geschenkt. Wie sie aussehen und heißen, hängt vom Theme ab (Barren,
+Wachssiegel oder Gürtelfarben).
 
 ## Wie geplant wird
 
@@ -66,11 +82,11 @@ Deko-Balken, sondern eine ehrliche Anzeige.
 
 ## Themes
 
-Mitgeliefert sind **Schmiede** (mittelalterlich, Pixelkanten), **Anime** (Neon,
-Speedlines) und **Pergament** (heller Lesemodus). Ein Theme bestimmt nicht nur Farben,
-sondern auch Begriffe („Schmiedegang" vs. „Trainingslauf"), Stufennamen, Icons und
-Klänge. Ein eigenes Theme sind zwei Stellen im Code:
-[docs/THEMES.md](docs/THEMES.md).
+Mitgeliefert sind **Pergament** (heller Lesemodus, Vorgabe), **Schmiede**
+(mittelalterlich, Blockoptik) und **Anime** (Neon, Speedlines). Ein Theme bestimmt
+nicht nur Farben, sondern auch Begriffe („Schmiedegang" vs. „Trainingslauf"),
+Stufennamen, Auszeichnungen, Icons und Klänge. Ein eigenes Theme sind zwei Stellen
+im Code: [docs/THEMES.md](docs/THEMES.md).
 
 ## Datenschutz
 
@@ -99,6 +115,7 @@ js/fsrs.js              FSRS-5-Scheduler
 js/session.js           Auswahl der Karten und Aufgabenformate
 js/store.js             Persistenz (localStorage), Export/Import
 js/parse.js             toleranter Import-Parser für KI-Antworten
+js/languages.js         Sprachen und ihre Lernkonventionen
 js/themes.js            Theme-Registry: Begriffe, Icons, Klänge
 js/views/               eine Datei pro Bildschirm
 sw.js                   Service Worker (offline)

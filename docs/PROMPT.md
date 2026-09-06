@@ -4,11 +4,17 @@ Die App erzeugt den Prompt unter **Import** automatisch aus den gewählten Sprac
 und dem Deck-Namen. Dieses Dokument ist die Referenz zum Nachlesen – etwa wenn man
 den Prompt einmal in ein anderes Werkzeug übernehmen will.
 
+Standardweg ist seit Version 2 die **Datei**: Die KI legt eine `.json` zum
+Herunterladen an, die man in der App auswählt. Das umgeht den häufigsten
+Fehler – beim Kopieren aus einem Chatfenster werden Anführungszeichen
+typografisch und das JSON damit ungültig.
+
 ## Prompt (Beispiel Deutsch → Englisch)
 
 ```text
 Du bekommst ein Foto einer Vokabelseite aus einem Schulbuch (Englisch).
-Lies alle Vokabelpaare vollständig aus und gib sie als JSON zurück.
+Lies alle Vokabelpaare vollständig aus und lege das Ergebnis als JSON-Datei zum
+Herunterladen an, Dateiname "wortschmiede-unit-1.json".
 
 Regeln:
 - "front" = Deutsch (die Sprache, die ich schon kann)
@@ -21,7 +27,8 @@ Regeln:
 - Nichts erfinden, nichts weglassen, Reihenfolge der Seite beibehalten.
 - Umlaute und Akzente korrekt setzen.
 - Gerade Anführungszeichen verwenden ("), keine typografischen („ " " ").
-- Antworte NUR mit dem JSON, ohne Erklärung, ohne Markdown-Rahmen.
+- Gib mir die fertige Datei zum Herunterladen. Kannst du keine Dateien erzeugen,
+  dann gib das JSON stattdessen in einem Codeblock aus – ohne Text davor oder danach.
 ```
 
 ## Datenformat

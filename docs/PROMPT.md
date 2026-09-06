@@ -20,6 +20,7 @@ Regeln:
   "exampleTranslation". Erfinde nichts dazu, wenn keine da sind.
 - Nichts erfinden, nichts weglassen, Reihenfolge der Seite beibehalten.
 - Umlaute und Akzente korrekt setzen.
+- Gerade Anführungszeichen verwenden ("), keine typografischen („ " " ").
 - Antworte NUR mit dem JSON, ohne Erklärung, ohne Markdown-Rahmen.
 ```
 
@@ -61,6 +62,8 @@ verraten, blendet die App ihn während der Frage aus und zeigt ihn erst in der A
 
 Falls die KI sich nicht ans Format hält, greifen der Reihe nach diese Rettungswege:
 
+0. typografische Anführungszeichen („ " " ") statt gerader – der häufigste
+   Kopierfehler aus gerenderten Chat-Antworten und von der Handy-Autokorrektur
 1. JSON in einem ```-Codeblock
 2. JSON irgendwo im Antworttext (erste `{` bis letzte `}`)
 3. ein blankes Array `[{...}, {...}]`
@@ -78,3 +81,7 @@ Lernfortschritt bestehender Karten bleibt dabei erhalten.
 - Gerade fotografieren, Schatten vermeiden – Handschrift wird oft falsch gelesen.
 - Das Ergebnis kurz überfliegen: Falsch erkannte Vokabeln kann man im Deck antippen
   und dort korrigieren.
+- Sprachen mit Längenstrichen oder Akzenten (Latein, Französisch, Spanisch): Fehlen
+  beim Tippen nur diese Zeichen, wertet die App das als *fast richtig* (Note „Schwer"),
+  nicht als Fehler. Wer sie ganz ignorieren will, schaltet in der Werkbank
+  **Akzente/Umlaute ignorieren** ein.

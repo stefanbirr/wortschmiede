@@ -19,6 +19,9 @@ const FIELD_ALIASES = {
 
 const norm = (k) => String(k).toLowerCase().replace(/[\s_-]/g, '');
 
+/** Mehrzeilige Werte platt machen: Alternativen mit " / ", sonst ein Leerzeichen. */
+const flatten = (v) => String(v ?? '').replace(/\s*\n+\s*/g, ' / ').replace(/[ \t]+/g, ' ').trim();
+
 function mapEntry(raw) {
   if (typeof raw === 'string') {
     const parts = raw.split(/\s*[–—\-=]{1,2}>?\s*|\t|;|,/).filter(Boolean);
@@ -36,6 +39,9 @@ function mapEntry(raw) {
       if (seen.has(alias)) { out[field] = raw[seen.get(alias)]; break; }
     }
   }
+  for (const key of ['front', 'back', 'hint', 'example', 'exampleTranslation']) {
+    if (out[key] != null) out[key] = flatten(out[key]);
+  }
   if (out.alternatives && !Array.isArray(out.alternatives)) {
     out.alternatives = String(out.alternatives).split(/[;,/|]/).map((s) => s.trim()).filter(Boolean);
   }
@@ -43,6 +49,19 @@ function mapEntry(raw) {
     out.tags = String(out.tags).split(/[;,/|]/).map((s) => s.trim()).filter(Boolean);
   }
   return out.front && out.back ? out : null;
+}
+
+/**
+ * Typografische Anfuehrungszeichen zu geraden machen.
+ * Kopiert man die Antwort aus einer gerenderten Chat-Oberflaeche (oder tippt
+ * sie auf dem Handy mit Autokorrektur ab), stehen dort " " statt " – JSON ist
+ * damit ungueltig. Wird nur als zweiter Versuch benutzt, damit ein Deck mit
+ * echten Anfuehrungszeichen im Text nicht zerschossen wird.
+ */
+function straightenQuotes(text) {
+  return text
+    .replace(/[\u201C\u201D\u201E\u201F\u00AB\u00BB\u2033]/g, '"')
+    .replace(/[\u2018\u2019\u201A\u201B\u2032]/g, "'");
 }
 
 /** Holt das erste plausible JSON aus einem Text (auch aus ```json-Bloecken). */
@@ -57,7 +76,12 @@ function extractJson(text) {
     if (lastBrace > firstBrace) candidates.push(text.slice(firstBrace, lastBrace + 1));
   }
   for (const c of candidates) {
-    try { return JSON.parse(c.trim()); } catch { /* naechster Versuch */ }
+    const raw = c.trim();
+    try { return JSON.parse(raw); } catch { /* naechster Versuch */ }
+    const straight = straightenQuotes(raw);
+    if (straight !== raw) {
+      try { return JSON.parse(straight); } catch { /* naechster Versuch */ }
+    }
   }
   return null;
 }

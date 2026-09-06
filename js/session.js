@@ -169,7 +169,7 @@ export function gradeAnswer(task, input) {
     ignoreArticles: settings.ignoreArticles,
   });
   if (verdict === 'wrong') return { grade: GRADE.AGAIN, verdict };
-  if (verdict === 'typo') return { grade: GRADE.HARD, verdict };
+  if (verdict === 'typo' || verdict === 'accent') return { grade: GRADE.HARD, verdict };
   const fast = seconds < 4 && task.card.srs.stability > 10;
   return { grade: fast ? GRADE.EASY : GRADE.GOOD, verdict };
 }

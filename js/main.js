@@ -1,8 +1,9 @@
 /* App-Start: Theme setzen, Routen registrieren, Service Worker anmelden. */
 
 import { $, el } from './util.js';
+import { icon as svgIcon } from './icons.js';
 import { getSettings, subscribe, globalStats, getState } from './store.js';
-import { applyTheme, t, icon } from './themes.js';
+import { applyTheme, t, iconEl } from './themes.js';
 import { defineRoutes, startRouter, navigate, back, currentPath } from './router.js';
 import { toast } from './ui.js';
 
@@ -43,8 +44,8 @@ function renderTopStats() {
   const host = $('#topbar-stats');
   host.innerHTML = '';
   host.append(
-    el('span', { title: 'fällige Wiederholungen' }, '🔁 ', el('b', {}, String(g.due))),
-    el('span', { title: t('streak') }, `${icon('home')} `, el('b', {}, String(p.streak || 0))),
+    el('span', { title: 'fällige Wiederholungen' }, svgIcon('repeat', { size: 14 }), el('b', {}, String(g.due))),
+    el('span', { title: t('streak') }, iconEl('streak', { size: 14 }), el('b', {}, String(p.streak || 0))),
   );
 }
 

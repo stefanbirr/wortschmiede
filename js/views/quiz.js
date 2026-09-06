@@ -14,16 +14,17 @@ import { listDecks, listCards, getDeck, getSettings, deckAward } from '../store.
 import { GRADE, forgeStage, previewIntervals } from '../fsrs.js';
 import { buildQueue, buildTask, gradeAnswer, applyGrade, requeue, KIND_LABEL } from '../session.js';
 import { speak, speechAvailable, sfx, buzz, sparks, hit } from '../fx.js';
-import { t, stageName, award } from '../themes.js';
+import { t, stageName, award, iconEl } from '../themes.js';
 import { bar, empty, stageDots, toast, medal } from '../ui.js';
 import { navigate } from '../router.js';
 import { attachSwipe } from '../gesture.js';
 import { deckPicker, ALL_DECKS } from './learn.js';
+import { icon as svgIcon } from '../icons.js';
 
 export function render(params) {
   const decks = listDecks();
   if (!decks.length) {
-    return empty('📸', 'Keine Vokabeln da', 'Importiere zuerst eine Buchseite.',
+    return empty(iconEl('import', { size: 46 }), 'Keine Vokabeln da', 'Importiere zuerst eine Buchseite.',
       el('button.btn.btn--primary', { style: 'margin-top:12px', onclick: () => navigate('/import') }, 'Zum Import'));
   }
   if (!params.deckId) {
@@ -49,7 +50,8 @@ function sessionView(deck) {
   if (!queue.length) {
     const ahead = buildQueue({ deckIds, limit: settings.sessionSize, includeNew: false, ahead: true });
     root.append(el('section.panel.center', {},
-      el('h2', {}, '🎉 Nichts fällig'),
+      el('div', { style: 'margin-bottom:6px' }, iconEl('good', { size: 44 })),
+      el('h2', {}, 'Nichts fällig'),
       el('p.muted', {}, 'Alle Vokabeln dieses Decks sitzen für heute. Nächste Wiederholung: ' + nextDueLabel(deck)),
       ahead.length
         ? el('button.btn.btn--primary', { onclick: () => start(ahead, true) }, 'Trotzdem üben (vorziehen)')
@@ -84,7 +86,7 @@ function sessionView(deck) {
     const progressBar = bar(0);
     const counter = el('span.small.muted');
     head.append(
-      el('button.btn.btn--sm.btn--ghost', { onclick: () => confirmQuit() }, '✕'),
+      el('button.btn.btn--sm.btn--ghost', { onclick: () => confirmQuit(), 'aria-label': 'Abfrage beenden' }, svgIcon('x', { size: 18 })),
       progressBar, counter);
 
     const host = el('div');
@@ -168,7 +170,7 @@ function sessionView(deck) {
         task.card.alternatives?.length ? el('div.small.muted', {}, 'auch: ' + task.card.alternatives.join(', ')) : null,
         task.card.example ? el('div.small.muted', { style: 'margin-top:6px' }, `„${task.card.example}“`) : null,
         task.card.exampleTranslation ? el('div.small.muted', {}, task.card.exampleTranslation) : null,
-        speechAvailable() ? el('button.btn.btn--sm', { style: 'margin-top:8px', onclick: () => speak(task.solution, langFor(task, deck, true)) }, '🔊') : null,
+        speechAvailable() ? el('button.btn.btn--sm', { style: 'margin-top:8px', onclick: () => speak(task.solution, langFor(task, deck, true)), 'aria-label': 'Vorlesen' }, svgIcon('volume2', { size: 16 })) : null,
       );
 
       // Tippen und Auto-Weiter duerfen sich nicht ueberholen.
@@ -202,7 +204,7 @@ function sessionView(deck) {
         if (!a) continue;
         const deckName = getDeck(id)?.name || '';
         root.append(el('div.award-banner', {},
-          medal(a),
+          medal(a, { size: 46 }),
           el('div.award-banner__text', {},
             el('b', {}, a.name),
             el('span.small.muted', {}, `${deckName}: jede Vokabel steht jetzt auf ${stageName(now)}.`))));
@@ -250,7 +252,7 @@ function promptBlock(task, deck, { hideWord = false } = {}) {
   return el('div.quiz-prompt', {},
     el('div.quiz-prompt__kind', {}, `${KIND_LABEL[task.kind]} · ${task.direction === 'production' ? `${deck.sourceLanguage} → ${deck.targetLanguage}` : `${deck.targetLanguage} → ${deck.sourceLanguage}`}`),
     hideWord
-      ? el('button.btn.btn--primary', { style: 'margin:10px auto', onclick: () => speak(task.speakText, langFor(task, deck, true)) }, '🔊 Nochmal hören')
+      ? el('button.btn.btn--primary', { style: 'margin:10px auto', onclick: () => speak(task.speakText, langFor(task, deck, true)) }, svgIcon('volume2', { size: 18 }), 'Nochmal hören')
       : el('div.quiz-prompt__word', {}, task.promptText),
     task.hint ? el('div.quiz-prompt__hint', {}, task.hint) : null,
     el('div', { style: 'margin-top:8px' }, stageDots(forgeStage(task.card.srs))),
@@ -310,7 +312,7 @@ function renderType(task, deck, submit) {
       task.solution.length > 3
         ? el('button.btn.btn--sm.btn--ghost', {
             onclick: (e) => { input.value = task.solution.slice(0, Math.ceil(task.solution.length / 3)); input.focus(); e.currentTarget.disabled = true; },
-          }, '💡 Anfang zeigen')
+          }, svgIcon('lightbulb', { size: 15 }), 'Anfang zeigen')
         : null),
   );
 }
@@ -363,7 +365,7 @@ function renderLetters(task, deck, submit) {
     slots,
     pool,
     el('div.row', { style: 'margin-top:10px' },
-      el('button.btn.btn--sm.btn--ghost', { onclick: () => { built = ''; sync(); redrawPool(); } }, '↺ Leeren'),
+      el('button.btn.btn--sm.btn--ghost', { onclick: () => { built = ''; sync(); redrawPool(); } }, svgIcon('rotateCcw', { size: 15 }), 'Leeren'),
       el('button.btn.btn--sm.btn--ghost', { onclick: () => submit(task, { value: '' }) }, 'Aufgeben')),
   );
 }

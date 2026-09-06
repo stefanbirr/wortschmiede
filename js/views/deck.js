@@ -3,12 +3,13 @@
 import { el, humanDue } from '../util.js';
 import { getDeck, listCards, deckStats, updateDeck, deleteDeck, updateCard, deleteCard, resetCardProgress, addCards, awardProgress } from '../store.js';
 import { forgeStage } from '../fsrs.js';
-import { stageName, t, icon, awards as THEME_AWARDS } from '../themes.js';
+import { stageName, t, iconEl, awards as THEME_AWARDS } from '../themes.js';
 import { bar, stageDots, toast, confirmDialog, modal, awardRow } from '../ui.js';
 import { navigate } from '../router.js';
 import { speak, speechAvailable } from '../fx.js';
 import { directionOptions } from '../languages.js';
 import { effectiveDirection } from '../session.js';
+import { icon as svgIcon } from '../icons.js';
 
 export function render(params) {
   const deck = getDeck(params.deckId);
@@ -20,7 +21,7 @@ export function render(params) {
 
   root.append(el('div.row.row--between', {},
     el('h1', { style: 'margin:0' }, deck.name),
-    el('button.btn.btn--sm.btn--ghost', { onclick: () => editDeck(deck) }, '✏️')));
+    el('button.btn.btn--sm.btn--ghost', { onclick: () => editDeck(deck), 'aria-label': 'Deck bearbeiten' }, svgIcon('pencil', { size: 18 }))));
 
   root.append(el('section.panel', {},
     el('div.stat-grid', {},
@@ -47,8 +48,8 @@ export function render(params) {
         : `Noch ${ap.remaining} von ${ap.total} ${ap.total === 1 ? 'Vokabel' : 'Vokabeln'} bis zur Auszeichnung „${nextAward?.name ?? 'nächster Rang'}“ – die gibt es erst, wenn jede Karte die Stufe erreicht hat.`)));
 
   root.append(el('div.row.row--equal', {},
-    el('button.btn.btn--primary', { style: 'flex:1 1 46%', onclick: () => navigate(`/schmieden/${deck.id}`) }, `${icon('quiz')} ${t('quizStart')}`),
-    el('button.btn', { style: 'flex:1 1 46%', onclick: () => navigate(`/lernen/${deck.id}`) }, `${icon('learn')} ${t('learn')}`)));
+    el('button.btn.btn--primary', { style: 'flex:1 1 46%', onclick: () => navigate(`/schmieden/${deck.id}`) }, iconEl('quiz', { size: 20 }), t('quizStart')),
+    el('button.btn', { style: 'flex:1 1 46%', onclick: () => navigate(`/lernen/${deck.id}`) }, iconEl('learn', { size: 20 }), t('learn'))));
 
   const search = el('input', { type: 'text', placeholder: 'Vokabel suchen …', 'aria-label': 'Vokabel suchen' });
   const list = el('div.vlist');
@@ -75,12 +76,12 @@ export function render(params) {
   root.append(el('section.panel', {},
     el('div.row.row--between', {},
       el('h2', { style: 'margin:0' }, 'Vokabeln'),
-      el('button.btn.btn--sm', { onclick: () => addCardDialog(deck, draw, cards) }, '➕ Neu')),
+      el('button.btn.btn--sm', { onclick: () => addCardDialog(deck, draw, cards) }, svgIcon('plus', { size: 16 }), 'Neu')),
     el('div', { style: 'margin:10px 0' }, search),
     list));
 
   root.append(el('div.row', {},
-    el('button.btn.btn--sm.btn--ghost', { onclick: () => navigate('/import') }, '📸 Mehr importieren'),
+    el('button.btn.btn--sm.btn--ghost', { onclick: () => navigate('/import') }, iconEl('import', { size: 16 }), 'Mehr importieren'),
     el('span.spacer'),
     el('button.btn.btn--sm.btn--danger', {
       onclick: () => confirmDialog('Deck löschen?', `„${deck.name}“ und alle ${s.total} Vokabeln werden von diesem Gerät gelöscht. Das lässt sich nicht rückgängig machen.`,
@@ -139,7 +140,7 @@ function editCard(card, refresh) {
       el('label.field', {}, el('span', {}, 'Hinweis'), hint),
       el('label.field', {}, el('span', {}, 'Auch richtig (Komma getrennt)'), alts),
       el('div.small.muted', {}, `${stageName(forgeStage(card.srs))} · ${card.srs.introduced ? 'nächste Wiederholung ' + humanDue(card.srs.due) : 'noch nicht abgefragt'} · ${card.srs.lapses || 0}× vergessen`),
-      speechAvailable() ? el('button.btn.btn--sm', { style: 'margin-top:8px', onclick: () => speak(card.back) }, '🔊 Vorlesen') : null),
+      speechAvailable() ? el('button.btn.btn--sm', { style: 'margin-top:8px', onclick: () => speak(card.back) }, svgIcon('volume2', { size: 16 }), 'Vorlesen') : null),
     actions: [
       { label: 'Löschen', danger: true, onClick: () => { deleteCard(card.id); toast('Vokabel gelöscht.'); refresh(); } },
       { label: 'Zurücksetzen', onClick: () => { resetCardProgress(card.id); toast('Fortschritt zurückgesetzt.'); refresh(); } },

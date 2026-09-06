@@ -72,6 +72,7 @@ p { margin: 0 0 .8em; }
 a { color: var(--accent-2); }
 button, input, select, textarea { font: inherit; color: inherit; }
 img, svg { max-width: 100%; }
+svg { flex: none; vertical-align: middle; }
 [hidden] { display: none !important; }
 
 /* ---- Chrome: Topbar / Tabbar ------------------------------------------- */
@@ -115,7 +116,8 @@ body[data-focus="1"] .forge-glow::after { bottom: 12px; opacity: calc(var(--deco
   font-size: .95rem;
   text-shadow: var(--display-shadow);
 }
-.topbar__stats { margin-left: auto; display: flex; gap: 8px; font-size: .8rem; color: var(--ink-dim); }
+.topbar__stats { margin-left: auto; display: flex; gap: 10px; font-size: .8rem; color: var(--ink-dim); }
+.topbar__stats > span { display: inline-flex; align-items: center; gap: 4px; }
 .topbar__stats b { color: var(--accent-2); font-variant-numeric: tabular-nums; }
 
 .tabbar {
@@ -219,7 +221,7 @@ textarea { min-height: 160px; resize: vertical; font-family: ui-monospace, SFMon
 
 /* ---- Chips / Badges ---------------------------------------------------- */
 .chip {
-  display: inline-flex; align-items: center; gap: 5px;
+  display: inline-flex; align-items: center; gap: 6px;
   padding: 3px 9px; font-size: .74rem;
   background: color-mix(in srgb, var(--accent) 14%, transparent);
   border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
@@ -250,21 +252,14 @@ textarea { min-height: 160px; resize: vertical; font-family: ui-monospace, SFMon
 .stage i.on { background: linear-gradient(180deg, var(--accent-2), var(--accent)); border-color: var(--accent); box-shadow: 0 0 6px color-mix(in srgb, var(--accent) 60%, transparent); }
 
 /* ---- Auszeichnungen ---------------------------------------------------- */
-/* Die Auszeichnung selbst: Farbe kommt aus dem Theme-Eintrag (--c),
-   die FORM aus dem Theme-Token --award-clip (Barren, Gürtel, Siegel). */
+/* Die Auszeichnung: Form ist ein Motiv aus dem Theme (Barren, Gürtel,
+   Wachssiegel), Farbe kommt aus dem Rang über --c. */
 .medal {
-  display: inline-block; flex: none;
-  width: var(--medal-size, 30px); height: var(--medal-size, 30px);
-  background:
-    radial-gradient(circle at 34% 28%, color-mix(in srgb, var(--c) 45%, white) 0 18%, transparent 60%),
-    linear-gradient(160deg, color-mix(in srgb, var(--c) 82%, white), var(--c) 45%, color-mix(in srgb, var(--c) 70%, black));
-  clip-path: var(--award-clip, none);
-  border-radius: var(--award-radius, 50%);
+  display: inline-flex; flex: none;
+  color: var(--c);
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .35));
 }
-.medal--locked {
-  background: var(--line);
-  opacity: .45;
-}
+.medal--locked { color: var(--ink-faint); opacity: .3; filter: none; }
 
 .award {
   display: inline-flex; align-items: center; gap: 6px;
@@ -273,7 +268,7 @@ textarea { min-height: 160px; resize: vertical; font-family: ui-monospace, SFMon
   border: 1px solid color-mix(in srgb, var(--accent-2) 45%, transparent);
   border-radius: 999px;
 }
-.award .medal { --medal-size: 16px; }
+
 
 .award-row { display: flex; gap: 6px; }
 .award-slot {
@@ -292,7 +287,7 @@ textarea { min-height: 160px; resize: vertical; font-family: ui-monospace, SFMon
   box-shadow: var(--shadow-card);
   animation: award-pop .5s cubic-bezier(.2, 1.4, .4, 1);
 }
-.award-banner .medal { --medal-size: 46px; }
+
 .award-banner__text b { display: block; font-family: var(--font-display); font-size: 1.05rem; }
 @keyframes award-pop { from { transform: scale(.7); opacity: 0; } }
 
@@ -461,7 +456,7 @@ textarea { min-height: 160px; resize: vertical; font-family: ui-monospace, SFMon
 
 /* ---- Empty State ------------------------------------------------------- */
 .empty { text-align: center; padding: 28px 14px; color: var(--ink-dim); }
-.empty__icon { font-size: 2.6rem; display: block; margin-bottom: 8px; filter: var(--icon-filter, none); }
+.empty__icon { font-size: 2.6rem; display: block; margin-bottom: 10px; color: var(--ink-faint); filter: var(--icon-filter, none); }
 
 /* ---- Codeblock (Prompt) ------------------------------------------------ */
 .codebox {

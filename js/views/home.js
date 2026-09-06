@@ -2,7 +2,7 @@
 
 import { el, humanDue } from '../util.js';
 import { listDecks, listCards, deckStats, globalStats, getState, todayCount, deckAward } from '../store.js';
-import { t, icon, stageName } from '../themes.js';
+import { t, iconEl, stageName } from '../themes.js';
 import { bar, empty, stageDots, awardBadge } from '../ui.js';
 import { navigate } from '../router.js';
 
@@ -18,7 +18,7 @@ export function render() {
   root.append(el('section.panel', {},
     el('div.row.row--between', {},
       el('h1', { style: 'margin:0' }, t('appTitle')),
-      el('span.chip', { title: t('streak') }, `${icon('home')} ${p.streak || 0} ${p.streak === 1 ? 'Tag' : 'Tage'}`)),
+      el('span.chip', { title: t('streak') }, iconEl('streak', { size: 15 }), `${p.streak || 0} ${p.streak === 1 ? 'Tag' : 'Tage'}`)),
     el('div.stat-grid', { style: 'margin:10px 0' },
       stat(g.due, 'fällig'),
       stat(g.new, 'neu'),
@@ -29,15 +29,15 @@ export function render() {
   ));
 
   if (!decks.length) {
-    root.append(empty('📸', 'Noch keine Vokabeln',
+    root.append(empty(iconEl('import', { size: 46 }), 'Noch keine Vokabeln',
       'Fotografiere deine Buchseite, lass sie von einem KI-Chat umwandeln und füge das Ergebnis hier ein.',
       el('button.btn.btn--primary', { style: 'margin-top:12px', onclick: () => navigate('/import') }, 'Vokabeln importieren')));
     return root;
   }
 
   root.append(el('div.row.row--equal', {},
-    el('button.btn.btn--primary', { style: 'flex:1 1 46%', onclick: () => navigate('/schmieden') }, `${icon('quiz')} ${t('quizStart')}`),
-    el('button.btn', { style: 'flex:1 1 46%', onclick: () => navigate('/lernen') }, `${icon('learn')} ${t('learn')}`),
+    el('button.btn.btn--primary', { style: 'flex:1 1 46%', onclick: () => navigate('/schmieden') }, iconEl('quiz', { size: 20 }), t('quizStart')),
+    el('button.btn', { style: 'flex:1 1 46%', onclick: () => navigate('/lernen') }, iconEl('learn', { size: 20 }), t('learn')),
   ));
 
   const list = el('div.stack');

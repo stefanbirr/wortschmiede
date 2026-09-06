@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "test": "node --test \"test/**/*.test.js\"",
-    "start": "python3 -m http.server 8080"
+    "start": "python3 -m http.server 8080",
+    "icons": "node tools/build-icons.mjs",
+    "app-icon": "node tools/build-app-icon.mjs"
   },
   "license": "MIT"
 }

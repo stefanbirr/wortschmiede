@@ -85,8 +85,17 @@ Deko-Balken, sondern eine ehrliche Anzeige.
 Mitgeliefert sind **Pergament** (heller Lesemodus, Vorgabe), **Schmiede**
 (mittelalterlich, Blockoptik) und **Anime** (Neon, Speedlines). Ein Theme bestimmt
 nicht nur Farben, sondern auch Begriffe („Schmiedegang" vs. „Trainingslauf"),
-Stufennamen, Auszeichnungen, Icons und Klänge. Ein eigenes Theme sind zwei Stellen
+Stufennamen, Motive und Klänge. Dieselbe Auszeichnung erscheint je nach Theme
+als **Barren**, als **Gürtel** oder als **Wachssiegel**. Ein eigenes Theme sind zwei Stellen
 im Code: [docs/THEMES.md](docs/THEMES.md).
+
+## Grafiken
+
+Die Symbole stammen aus zwei quelloffenen Sets: **game-icons.net** (CC BY 3.0)
+liefert die thematischen Motive – Amboss, Barren, Wachssiegel, Gürtel,
+Federkiel –, **Lucide** (ISC) die neutralen Bedienelemente. Beide sind mit
+`npm run icons` einmalig geholt und in `js/icons.js` eingebettet; zur Laufzeit
+lädt die App nichts von fremden Servern. Autoren und Lizenzen: [CREDITS.md](CREDITS.md).
 
 ## Datenschutz
 
@@ -105,6 +114,8 @@ Kein Build-Schritt, keine Abhängigkeiten – nur ES-Module, die der Browser dir
 ```bash
 npm start           # lokaler Server auf http://localhost:8080
 npm test            # Unit-Tests (FSRS, Import-Parser, Antwortvergleich)
+npm run icons       # Icon-Bibliothek und CREDITS.md neu bauen
+npm run app-icon    # App-Icons rendern (braucht Playwright: npx playwright install chromium)
 ```
 
 ```
@@ -116,6 +127,9 @@ js/session.js           Auswahl der Karten und Aufgabenformate
 js/store.js             Persistenz (localStorage), Export/Import
 js/parse.js             toleranter Import-Parser für KI-Antworten
 js/languages.js         Sprachen und ihre Lernkonventionen
+js/icons.js             eingebettete Icons (erzeugt, nicht von Hand ändern)
+tools/build-icons.mjs   holt die Icons und schreibt js/icons.js + CREDITS.md
+tools/build-app-icon.mjs  rendert die App-Icons aus dem Amboss-Motiv
 js/themes.js            Theme-Registry: Begriffe, Icons, Klänge
 js/views/               eine Datei pro Bildschirm
 sw.js                   Service Worker (offline)

@@ -7,13 +7,16 @@
    Siehe docs/THEMES.md.
    ========================================================================== */
 
+import { icon as svgIcon, hasIcon } from './icons.js';
+
 export const THEMES = {
   forge: {
     id: 'forge',
     label: 'Schmiede',
     blurb: 'Amboss, Glut und grobe Pixelkanten.',
     pixel: true,
-    icons: { home: '🔥', learn: '📖', quiz: '🔨', import: '📸', settings: '⚙️', good: '✨', bad: '💨' },
+    icons: { home: 'anvil', learn: 'bookOpen', quiz: 'hammer', import: 'camera', settings: 'gears', good: 'spark', streak: 'flame' },
+    awardShape: 'ingot',
     lexicon: {
       appTitle: 'Deine Esse',
       homeTab: 'Esse',
@@ -52,7 +55,8 @@ export const THEMES = {
     label: 'Anime',
     blurb: 'Neonlicht, Speedlines und Sternenstaub.',
     pixel: false,
-    icons: { home: '🌸', learn: '📘', quiz: '⚡', import: '📷', settings: '🎛️', good: '💫', bad: '💧' },
+    icons: { home: 'stars', learn: 'bookCover', quiz: 'bolt', import: 'camera', settings: 'gears', good: 'sparkles', streak: 'flame' },
+    awardShape: 'belt',
     lexicon: {
       appTitle: 'Dein Dojo',
       homeTab: 'Dojo',
@@ -88,7 +92,8 @@ export const THEMES = {
     label: 'Pergament',
     blurb: 'Heller Lesemodus mit Tinte und Papier.',
     pixel: false,
-    icons: { home: '🕯️', learn: '📜', quiz: '🖋️', import: '🗒️', settings: '🔧', good: '✔️', bad: '✖️' },
+    icons: { home: 'scroll', learn: 'bookCover', quiz: 'quill', import: 'camera', settings: 'gears', good: 'laurel', streak: 'flame' },
+    awardShape: 'seal',
     lexicon: {
       appTitle: 'Übersicht',
       homeTab: 'Start',
@@ -132,8 +137,9 @@ export function applyTheme(id) {
   const map = { '/': 'home', '/lernen': 'learn', '/schmieden': 'quiz', '/import': 'import', '/einstellungen': 'settings' };
   for (const a of document.querySelectorAll('.tabbar a')) {
     const key = map[a.dataset.tab];
-    const icon = a.querySelector('.tabbar__icon');
-    if (key && icon) icon.textContent = theme.icons[key];
+    const slot = a.querySelector('.tabbar__icon');
+    if (!key || !slot) continue;
+    slot.replaceChildren(svgIcon(theme.icons[key], { size: 22 }));
   }
   const labels = { '/': 'homeTab', '/lernen': 'learn', '/schmieden': 'quiz', '/einstellungen': 'settingsTab' };
   for (const [tab, key] of Object.entries(labels)) {
@@ -154,4 +160,10 @@ export const stageName = (n) => current.stages[Math.max(0, Math.min(5, n))];
 /** Auszeichnung zu Stufe 1..5; Stufe 0 heisst "noch keine". */
 export const award = (level) => (level >= 1 ? current.awards[Math.min(5, level) - 1] : null);
 export const awards = () => current.awards;
-export const icon = (key) => current.icons[key] ?? '';
+/** Motiv des aktuellen Themes als <svg>. */
+export function iconEl(key, opts = {}) {
+  const name = current.icons[key] || key;
+  return svgIcon(hasIcon(name) ? name : 'spark', opts);
+}
+export const iconName = (key) => current.icons[key] || key;
+export const awardShape = () => current.awardShape || 'seal';

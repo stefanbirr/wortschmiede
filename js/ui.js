@@ -1,7 +1,8 @@
 /* Wiederverwendbare UI-Bausteine: Toast, Modal, Stufenanzeige. */
 
 import { el, $ } from './util.js';
-import { stageName, award, awards } from './themes.js';
+import { stageName, award, awards, awardShape } from './themes.js';
+import { icon as svgIcon } from './icons.js';
 
 export function toast(message, ms = 2400) {
   const host = $('#toast-host');
@@ -59,11 +60,17 @@ export function bar(pct) {
 }
 
 /** Kleines Abzeichen für die Deck-Liste. */
-export function medal(a, { locked = false, size } = {}) {
-  return el('span.medal' + (locked ? '.medal--locked' : ''), {
-    style: `--c:${a.color}${size ? `; --medal-size:${size}px` : ''}`,
+/**
+ * Die Auszeichnung: Form kommt aus dem Theme (Barren, Gürtel, Wachssiegel),
+ * Farbe aus dem Rang. Ein Motiv, drei völlig verschiedene Anmutungen.
+ */
+export function medal(a, { locked = false, size = 30 } = {}) {
+  const wrap = el('span.medal' + (locked ? '.medal--locked' : ''), {
+    style: `--c:${a.color}`,
     'aria-hidden': 'true',
   });
+  wrap.append(svgIcon(awardShape(), { size }));
+  return wrap;
 }
 
 export function awardBadge(level) {
@@ -86,7 +93,7 @@ export function awardRow(level) {
 
 export function empty(icon, title, text, action) {
   return el('div.empty', {},
-    el('span.empty__icon', {}, icon),
+    el('span.empty__icon', {}, icon),   // Text oder <svg>
     el('h2', {}, title),
     el('p.small', {}, text),
     action || null);

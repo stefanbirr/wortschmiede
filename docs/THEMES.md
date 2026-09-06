@@ -46,7 +46,6 @@ Wichtige Tokens:
 | `--texture` | Hintergrundmuster des Bodys |
 | `--glow` | Lichtstimmung hinter allem |
 | `--deco` | dekorative Silhouette am unteren Rand (`--deco-opacity` regelt die Stärke) |
-| `--award-clip`, `--award-radius` | Form der Auszeichnungen (Barren, Gürtel, Siegel) |
 | `--font-display`, `--display-transform`, `--display-spacing`, `--display-shadow` | Überschriften-Charakter |
 
 Farben immer als Token setzen. Wer im Theme zusätzlich Komponenten anpassen will,
@@ -60,7 +59,9 @@ cyber: {
   label: 'Cyber',
   blurb: 'Terminalgrün und Neonröhren.',
   pixel: true,                       // schaltet image-rendering: pixelated
-  icons: { home: '🖥️', learn: '💾', quiz: '⌨️', import: '📡', settings: '🔩', good: '✅', bad: '⛔' },
+  icons: { home: 'anvil', learn: 'bookOpen', quiz: 'hammer', import: 'camera',
+           settings: 'gears', good: 'spark', streak: 'flame' },
+  awardShape: 'ingot',               // Form der Auszeichnungen: ingot | belt | seal
   lexicon: {
     appTitle: 'Dein Terminal',
     homeTab: 'Terminal', settingsTab: 'Config',
@@ -91,11 +92,16 @@ cyber: {
 - `lexicon` ersetzt Beschriftungen in der ganzen App. Fehlt ein Schlüssel, erscheint
   der Schlüsselname – also am besten den `forge`-Block als Vorlage kopieren.
 - `stages` sind die sechs Fortschrittsstufen (Index 0 = noch nie abgefragt).
+- `icons` verweist auf Motive aus `js/icons.js` (Schlüssel dort nachsehen).
+  Wer ein Motiv braucht, das noch fehlt, trägt es in `tools/build-icons.mjs`
+  ein und lässt `npm run icons` laufen – das aktualisiert auch CREDITS.md.
+- `awardShape` bestimmt, wie die Auszeichnungen aussehen: `ingot` (Barren),
+  `belt` (Gürtel) oder `seal` (Wachssiegel). Es ist ein gewöhnlicher
+  Icon-Schlüssel, jedes andere Motiv geht also auch.
 - `awards` sind die fünf Auszeichnungen für ein vollständig gelerntes Deck.
   `name` steht im Abzeichen und im Erfolgsbanner, `short` in den Kacheln,
-  `color` färbt das Objekt. Die **Form** kommt aus dem Token `--award-clip`
-  (Barren als Trapez, Gürtel als Balken, Siegel als Kreis) – kein Emoji, damit
-  es auf jedem Gerät und in beiden Helligkeiten gleich aussieht.
+  `color` färbt das Motiv – keine Emojis, damit es auf jedem Gerät und in
+  beiden Helligkeiten gleich aussieht.
 - `sfx` beschreibt kurze synthetische Töne (Web Audio), es werden keine Dateien geladen.
   `type` ist eine Oszillatorform (`sine`, `square`, `triangle`, `sawtooth`),
   `freq` → `sweep` die Tonhöhenrampe in Hz, `dur` die Dauer in Sekunden.

@@ -10,18 +10,19 @@ import { listDecks, listCards, getDeck, getSettings, deckStats } from '../store.
 import { GRADE } from '../fsrs.js';
 import { applyGrade, effectiveDirection } from '../session.js';
 import { speak, speechAvailable, sfx, buzz } from '../fx.js';
-import { t, icon, stageName } from '../themes.js';
+import { t, iconEl, stageName } from '../themes.js';
 import { bar, empty, toast, stageDots } from '../ui.js';
 import { navigate } from '../router.js';
 import { attachSwipe } from '../gesture.js';
 import { forgeStage } from '../fsrs.js';
+import { icon as svgIcon } from '../icons.js';
 
 export const ALL_DECKS = { id: 'alle', name: 'Alle Decks', sourceLanguage: 'de', targetLanguage: 'en' };
 
 export function render(params) {
   const decks = listDecks();
   if (!decks.length) {
-    return empty('📸', 'Keine Vokabeln da',
+    return empty(iconEl('import', { size: 46 }), 'Keine Vokabeln da',
       'Importiere zuerst eine Buchseite.',
       el('button.btn.btn--primary', { style: 'margin-top:12px', onclick: () => navigate('/import') }, 'Zum Import'));
   }
@@ -58,7 +59,7 @@ function cardStack(deck) {
   const isAll = deck.id === 'alle';
   const cards0 = isAll ? listCards() : listCards(deck.id);
   if (!cards0.length) {
-    return empty('🪶', 'Deck ist leer', 'In diesem Deck stehen noch keine Vokabeln.',
+    return empty(iconEl('learn', { size: 46 }), 'Deck ist leer', 'In diesem Deck stehen noch keine Vokabeln.',
       el('button.btn', { style: 'margin-top:12px', onclick: () => navigate('/import') }, 'Vokabeln importieren'));
   }
 
@@ -102,7 +103,7 @@ function cardStack(deck) {
         card.exampleTranslation ? el('div.flipcard__sub.small', {}, card.exampleTranslation) : null,
         speechAvailable() ? el('button.btn.btn--sm', {
           onclick: (e) => { e.stopPropagation(); speak(faceB, langB); },
-        }, '🔊 Vorlesen') : null,
+        }, svgIcon('volume2', { size: 16 }), 'Vorlesen') : null,
         el('div.flipcard__tapme', {}, `${stageName(forgeStage(card.srs))} · ${card.srs.introduced ? humanDue(card.srs.due) : 'noch nicht abgefragt'}`),
       ));
 
@@ -141,7 +142,7 @@ function cardStack(deck) {
       el('h2', {}, t('done')),
       el('p.muted', {}, `Du hast ${cards.length} Karten durchgesehen.`),
       el('div.row', { style: 'justify-content:center; margin-top:10px' },
-        el('button.btn.btn--primary', { onclick: () => navigate(`/schmieden/${deck.id}`) }, `${icon('quiz')} Jetzt abfragen`),
+        el('button.btn.btn--primary', { onclick: () => navigate(`/schmieden/${deck.id}`) }, iconEl('quiz', { size: 20 }), 'Jetzt abfragen'),
         el('button.btn', { onclick: () => { index = 0; cards = shuffle(cards); rebuild(); } }, 'Nochmal durch'))));
   }
 
@@ -159,8 +160,8 @@ function cardStack(deck) {
   );
 
   extra.append(
-    el('button.btn.btn--sm.btn--ghost', { onclick: () => { cards = shuffle(cards); index = 0; draw(); toast('Stapel gemischt.'); } }, '🔀 Mischen'),
-    el('button.btn.btn--sm.btn--ghost', { onclick: () => { flip2back = !flip2back; draw(); toast(flip2back ? `Vorderseite: ${deckLang(deck, 'source')}` : `Vorderseite: ${deckLang(deck, 'target')}`); } }, '🔁 Richtung'),
+    el('button.btn.btn--sm.btn--ghost', { onclick: () => { cards = shuffle(cards); index = 0; draw(); toast('Stapel gemischt.'); } }, svgIcon('shuffle', { size: 15 }), 'Mischen'),
+    el('button.btn.btn--sm.btn--ghost', { onclick: () => { flip2back = !flip2back; draw(); toast(flip2back ? `Vorderseite: ${deckLang(deck, 'source')}` : `Vorderseite: ${deckLang(deck, 'target')}`); } }, svgIcon('repeat', { size: 15 }), 'Richtung'),
     el('button.btn.btn--sm.btn--ghost', {
       onclick: () => {
         const card = current();
@@ -169,7 +170,7 @@ function cardStack(deck) {
         toast(`„${card.back}“ als bekannt markiert – nächste Wiederholung ${humanDue(card.srs.due)}.`);
         step(1);
       },
-    }, '✅ Sitzt schon'),
+    }, svgIcon('check', { size: 15 }), 'Sitzt schon'),
   );
 
   rebuild();

@@ -20,6 +20,7 @@ const SHELL = [
   'js/parse.js',
   'js/prompt.js',
   'js/languages.js',
+  'js/icons.js',
   'js/demo.js',
   'js/themes.js',
   'js/ui.js',

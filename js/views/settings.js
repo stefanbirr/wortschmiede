@@ -7,6 +7,7 @@ import { toast, confirmDialog } from '../ui.js';
 import { navigate } from '../router.js';
 import { speechAvailable } from '../fx.js';
 import { intervalFor } from '../fsrs.js';
+import { icon as svgIcon } from '../icons.js';
 
 export function render() {
   const s = getSettings();
@@ -95,8 +96,8 @@ export function render() {
     el('h2', {}, 'Deine Daten'),
     el('p.small.muted', {}, `${g.decks} Decks · ${g.total} Vokabeln · ${usage.kb} KB auf diesem Gerät. Es gibt keinen Server und kein Konto – ohne Sicherung sind die Daten weg, wenn du Browserdaten löschst.`),
     el('div.row', {},
-      el('button.btn', { onclick: () => download(`wortschmiede-${new Date().toISOString().slice(0, 10)}.json`, exportAll()) }, '⬇️ Exportieren'),
-      el('button.btn', { onclick: () => fileInput.click() }, '⬆️ Backup laden'),
+      el('button.btn', { onclick: () => download(`wortschmiede-${new Date().toISOString().slice(0, 10)}.json`, exportAll()) }, svgIcon('download', { size: 17 }), 'Exportieren'),
+      el('button.btn', { onclick: () => fileInput.click() }, svgIcon('upload', { size: 17 }), 'Backup laden'),
       fileInput),
     el('button.btn.btn--danger.btn--block', { style: 'margin-top:10px',
       onclick: () => confirmDialog('Wirklich alles löschen?', 'Alle Decks, Vokabeln und der Lernfortschritt auf diesem Gerät werden gelöscht.',
@@ -110,7 +111,15 @@ export function render() {
     el('p.small.muted', {},
       `Wortschmiede lernt mit FSRS-5, dem aktuellen Standardverfahren für verteilte Wiederholung. Deine Antworten steuern Stabilität und Schwierigkeit jeder Karte; das nächste Intervall ist die Zeit, nach der du sie mit ${Math.round(s.desiredRetention * 100)} % Wahrscheinlichkeit noch weißt.`),
     el('p.small.muted', {}, `Bisher ${p.reviews || 0} Wiederholungen · längste Serie ${p.streak || 0} Tage · eine frisch gelernte Karte kommt nach etwa ${Math.round(intervalFor(3, s.desiredRetention))} Tagen wieder.`),
-    el('p.small.muted', {}, 'Offline nutzbar: Über das Browsermenü „Zum Startbildschirm hinzufügen“ wählen.')));
+    el('p.small.muted', {}, 'Offline nutzbar: Über das Browsermenü „Zum Startbildschirm hinzufügen“ wählen.'),
+    el('p.small.muted', {},
+      'Symbole: ',
+      el('a', { href: 'https://game-icons.net', target: '_blank', rel: 'noopener' }, 'game-icons.net'),
+      ' von Lorc und Delapouite (',
+      el('a', { href: 'https://creativecommons.org/licenses/by/3.0/', target: '_blank', rel: 'noopener' }, 'CC BY 3.0'),
+      ') sowie ',
+      el('a', { href: 'https://lucide.dev', target: '_blank', rel: 'noopener' }, 'Lucide'),
+      ' (ISC).')));
 
   return root;
 }

@@ -8,6 +8,7 @@ import { listDecks, createDeck, addCards } from '../store.js';
 import { toast } from '../ui.js';
 import { navigate } from '../router.js';
 import { DEMO_DECK } from '../demo.js';
+import { icon as svgIcon } from '../icons.js';
 
 export function render() {
   const decks = listDecks();
@@ -144,11 +145,11 @@ export function render() {
             toast(ok ? 'Prompt kopiert – jetzt ins KI-Tool einfügen.' : 'Kopieren nicht möglich – Text bitte markieren.');
             e.currentTarget.blur();
           },
-        }, '📋 Prompt kopieren'))),
+        }, svgIcon('check', { size: 18 }), 'Prompt kopieren'))),
 
     el('section.panel', {},
       el('h2', {}, 'Deck laden'),
-      el('button.btn.btn--primary.btn--block', { onclick: () => fileInput.click() }, '📄 JSON-Datei auswählen'),
+      el('button.btn.btn--primary.btn--block', { onclick: () => fileInput.click() }, svgIcon('upload', { size: 20 }), 'JSON-Datei auswählen'),
       fileInput,
       fileName,
       el('p.small.muted.center', { style: 'margin:10px 0 0' },
@@ -163,7 +164,7 @@ export function render() {
           input,
           el('div.row', { style: 'margin-top:8px' },
             el('button.btn.btn--sm', { onclick: async () => { try { input.value = await navigator.clipboard.readText(); check(); } catch { toast('Zwischenablage nicht freigegeben – bitte manuell einfügen.'); } } }, 'Aus Zwischenablage'),
-            el('button.btn.btn--sm.btn--ghost', { onclick: () => { input.value = ''; fileName.textContent = ''; check(); } }, 'Leeren')))),
+            el('button.btn.btn--sm.btn--ghost', { onclick: () => { input.value = ''; fileName.textContent = ''; check(); } }, svgIcon('rotateCcw', { size: 15 }), 'Leeren')))),
       el('label.field', { style: 'margin-top:12px' }, el('span', {}, 'Ziel'), targetDeck),
       preview,
       el('div', { style: 'margin-top:12px' }, saveBtn)),

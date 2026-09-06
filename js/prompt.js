@@ -6,8 +6,10 @@ import { languageName } from './languages.js';
 export function buildPrompt({ source = 'de', target = 'en', deckName = 'Unit 1', examples = true } = {}) {
   const S = languageName(source);
   const T = languageName(target);
+  const fileName = `wortschmiede-${(deckName || 'deck').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'deck'}.json`;
   return `Du bekommst ein Foto einer Vokabelseite aus einem Schulbuch (${T}).
-Lies alle Vokabelpaare vollständig aus und gib sie als JSON zurück.
+Lies alle Vokabelpaare vollständig aus und lege das Ergebnis als JSON-Datei zum
+Herunterladen an, Dateiname "${fileName}".
 
 Regeln:
 - "front" = ${S} (die Sprache, die ich schon kann)
@@ -19,9 +21,10 @@ Regeln:
 - Nichts erfinden, nichts weglassen, Reihenfolge der Seite beibehalten.
 - Umlaute und Akzente korrekt setzen.
 - Gerade Anführungszeichen verwenden ("), keine typografischen („ " " ").
-- Antworte NUR mit dem JSON, ohne Erklärung, ohne Markdown-Rahmen.
+- Gib mir die fertige Datei zum Herunterladen. Kannst du keine Dateien erzeugen,
+  dann gib das JSON stattdessen in einem Codeblock aus – ohne Text davor oder danach.
 
-Format:
+Inhalt der Datei (das Beispiel zeigt nur den Aufbau, nicht die Sprache):
 {
   "schema": "wortschmiede/deck@1",
   "name": "${deckName}",

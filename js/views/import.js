@@ -45,7 +45,7 @@ export function render() {
   refreshNote();
 
   const input = el('textarea', {
-    placeholder: 'Antwort der KI hier einfügen (JSON). Notfalls tut es auch eine einfache Liste: Wort – Übersetzung, eine pro Zeile.',
+    placeholder: 'JSON der KI hier einfügen. Notfalls tut es auch eine einfache Liste: Wort – Übersetzung, eine pro Zeile.',
     'aria-label': 'KI-Antwort einfügen',
   });
 
@@ -105,11 +105,13 @@ export function render() {
     navigate(`/deck/${deckId}`);
   });
 
+  const fileName = el('p.small.muted.center', { style: 'margin:8px 0 0' });
   const fileInput = el('input', { type: 'file', accept: '.json,.txt,.csv,.tsv,text/plain,application/json', style: 'display:none' });
   fileInput.addEventListener('change', async () => {
     const file = fileInput.files?.[0];
     if (!file) return;
     input.value = await file.text();
+    fileName.textContent = `📄 ${file.name}`;
     check();
   });
 
@@ -121,8 +123,9 @@ export function render() {
       el('ol.steps', {},
         el('li', {}, el('b', {}, 'Seite fotografieren'), el('div.small.muted', {}, 'Vokabelliste im Buch, gerade und scharf – zur Not zwei Fotos.')),
         el('li', {}, el('b', {}, 'Prompt kopieren'), el('div.small.muted', {}, 'Unten kopieren und in Gemini, ChatGPT oder Claude einfügen – die Gratisversion reicht.')),
-        el('li', {}, el('b', {}, 'Foto dazu, absenden'), el('div.small.muted', {}, 'Die KI antwortet mit einem JSON-Block.')),
-        el('li', {}, el('b', {}, 'Antwort hier einfügen'), el('div.small.muted', {}, 'Alles markieren, kopieren, unten ins Feld. Fertig.')))),
+        el('li', {}, el('b', {}, 'Foto dazu, absenden'), el('div.small.muted', {}, 'Die KI legt eine JSON-Datei zum Herunterladen an.')),
+        el('li', {}, el('b', {}, 'Datei herunterladen'), el('div.small.muted', {}, 'Auf dem Handy landet sie in „Downloads“.')),
+        el('li', {}, el('b', {}, 'Datei hier laden'), el('div.small.muted', {}, 'Unten auswählen – fertig.')))),
 
     el('section.panel', {},
       el('h2', {}, 'Prompt'),
@@ -144,15 +147,24 @@ export function render() {
         }, '📋 Prompt kopieren'))),
 
     el('section.panel', {},
-      el('h2', {}, 'Antwort einfügen'),
-      input,
-      el('div.row', { style: 'margin:8px 0' },
-        el('button.btn.btn--sm', { onclick: async () => { try { input.value = await navigator.clipboard.readText(); check(); } catch { toast('Zwischenablage nicht freigegeben – bitte manuell einfügen.'); } } }, 'Aus Zwischenablage'),
-        el('button.btn.btn--sm', { onclick: () => fileInput.click() }, 'Datei wählen'),
-        el('button.btn.btn--sm.btn--ghost', { onclick: () => { input.value = ''; check(); } }, 'Leeren'),
-        el('button.btn.btn--sm.btn--ghost', { onclick: () => { input.value = JSON.stringify(DEMO_DECK, null, 2); check(); } }, '🎁 Beispiel'),
-        fileInput),
-      el('label.field', {}, el('span', {}, 'Ziel'), targetDeck),
+      el('h2', {}, 'Deck laden'),
+      el('button.btn.btn--primary.btn--block', { onclick: () => fileInput.click() }, '📄 JSON-Datei auswählen'),
+      fileInput,
+      fileName,
+      el('p.small.muted.center', { style: 'margin:10px 0 0' },
+        'Noch kein Foto zur Hand? ',
+        el('a', {
+          href: '#/import',
+          onclick: (e) => { e.preventDefault(); input.value = JSON.stringify(DEMO_DECK, null, 2); fileName.textContent = '🎁 Beispiel-Deck'; check(); },
+        }, 'Beispiel-Deck laden')),
+      el('details', { style: 'margin-top:12px' },
+        el('summary.small.muted', { style: 'cursor:pointer' }, 'Kein Dateidownload möglich? Text einfügen'),
+        el('div', { style: 'margin-top:10px' },
+          input,
+          el('div.row', { style: 'margin-top:8px' },
+            el('button.btn.btn--sm', { onclick: async () => { try { input.value = await navigator.clipboard.readText(); check(); } catch { toast('Zwischenablage nicht freigegeben – bitte manuell einfügen.'); } } }, 'Aus Zwischenablage'),
+            el('button.btn.btn--sm.btn--ghost', { onclick: () => { input.value = ''; fileName.textContent = ''; check(); } }, 'Leeren')))),
+      el('label.field', { style: 'margin-top:12px' }, el('span', {}, 'Ziel'), targetDeck),
       preview,
       el('div', { style: 'margin-top:12px' }, saveBtn)),
 

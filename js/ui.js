@@ -1,7 +1,7 @@
 /* Wiederverwendbare UI-Bausteine: Toast, Modal, Stufenanzeige. */
 
 import { el, $ } from './util.js';
-import { stageName } from './themes.js';
+import { stageName, award, awards } from './themes.js';
 
 export function toast(message, ms = 2400) {
   const host = $('#toast-host');
@@ -56,6 +56,32 @@ export function stageDots(stage) {
 
 export function bar(pct) {
   return el('div.bar', {}, el('div.bar__fill', { style: `width:${Math.max(0, Math.min(100, pct))}%` }));
+}
+
+/** Kleines Abzeichen für die Deck-Liste. */
+export function medal(a, { locked = false, size } = {}) {
+  return el('span.medal' + (locked ? '.medal--locked' : ''), {
+    style: `--c:${a.color}${size ? `; --medal-size:${size}px` : ''}`,
+    'aria-hidden': 'true',
+  });
+}
+
+export function awardBadge(level) {
+  const a = award(level);
+  if (!a) return null;
+  return el('span.award', { title: `Alle Vokabeln auf Stufe ${stageName(level)}` }, medal(a), a.name);
+}
+
+/** Alle fünf Auszeichnungen, die erreichten hervorgehoben. */
+export function awardRow(level) {
+  const row = el('div.award-row');
+  awards().forEach((a, i) => {
+    const earned = i < level;
+    row.append(el('div.award-slot' + (earned ? '.is-earned' : ''), { title: a.name },
+      medal(a, { locked: !earned }),
+      el('span.award-slot__name', {}, a.short)));
+  });
+  return row;
 }
 
 export function empty(icon, title, text, action) {

@@ -1,10 +1,10 @@
 /* Deck-Detail: Statistik, Vokabelliste, Bearbeiten, Löschen. */
 
 import { el, humanDue } from '../util.js';
-import { getDeck, listCards, deckStats, updateDeck, deleteDeck, updateCard, deleteCard, resetCardProgress, addCards } from '../store.js';
+import { getDeck, listCards, deckStats, updateDeck, deleteDeck, updateCard, deleteCard, resetCardProgress, addCards, awardProgress } from '../store.js';
 import { forgeStage } from '../fsrs.js';
-import { stageName, t, icon } from '../themes.js';
-import { bar, stageDots, toast, confirmDialog, modal } from '../ui.js';
+import { stageName, t, icon, awards as THEME_AWARDS } from '../themes.js';
+import { bar, stageDots, toast, confirmDialog, modal, awardRow } from '../ui.js';
 import { navigate } from '../router.js';
 import { speak, speechAvailable } from '../fx.js';
 import { directionOptions } from '../languages.js';
@@ -33,6 +33,18 @@ export function render(params) {
 
   const dirLabel = (directionOptions(deck).find(([v]) => v === effectiveDirection(deck)) || [])[1];
   root.append(el('p.small.muted', { style: 'margin:-4px 0 0' }, `Abfrage: ${dirLabel || 'gemischt'}`));
+
+  const ap = awardProgress(deck.id);
+  const nextAward = THEME_AWARDS()[Math.min(4, ap.next - 1)];
+  root.append(el('section.panel', {},
+    el('h2', {}, 'Auszeichnungen'),
+    awardRow(ap.level),
+    el('p.small.muted', { style: 'margin:10px 0 0' },
+      ap.level >= 5
+        ? 'Alle Vokabeln auf der höchsten Stufe. Mehr geht nicht.'
+        // Die Auszeichnungsnamen sind je Theme anders gebeugt ("Schwarzer Gürtel",
+        // "Mithrilbarren") – als Zitat gesetzt bleibt der Satz in jedem Fall richtig.
+        : `Noch ${ap.remaining} von ${ap.total} ${ap.total === 1 ? 'Vokabel' : 'Vokabeln'} bis zur Auszeichnung „${nextAward?.name ?? 'nächster Rang'}“ – die gibt es erst, wenn jede Karte die Stufe erreicht hat.`)));
 
   root.append(el('div.row.row--equal', {},
     el('button.btn.btn--primary', { style: 'flex:1 1 46%', onclick: () => navigate(`/schmieden/${deck.id}`) }, `${icon('quiz')} ${t('quizStart')}`),

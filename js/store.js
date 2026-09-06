@@ -12,7 +12,7 @@ const KEY = 'wortschmiede.v1';
 const LOG_LIMIT = 4000;            // Review-Log fuer spaetere FSRS-Optimierung
 
 export const DEFAULT_SETTINGS = {
-  theme: 'forge',
+  theme: 'pergament',
   direction: 'production',         // production | recognition | both
   sessionSize: 20,
   newPerDay: 10,
@@ -262,6 +262,38 @@ export function globalStats(at = Date.now()) {
 }
 
 export const todayCount = () => state.progress.days[dayKey()] || 0;
+
+/**
+ * Auszeichnungsstufe eines Decks (0..5). Es zählt die SCHWÄCHSTE Karte:
+ * Eine Auszeichnung gibt es erst, wenn wirklich jede Vokabel des Decks die
+ * Stufe erreicht hat – sonst wäre sie geschenkt.
+ */
+export function deckAward(deckId) {
+  const cards = listCards(deckId);
+  if (!cards.length) return 0;
+  let min = 5;
+  for (const c of cards) {
+    const stage = forgeStage(c.srs);
+    if (stage < min) min = stage;
+    if (min === 0) break;
+  }
+  return min;
+}
+
+/** Wie viele Karten fehlen noch zur nächsten Auszeichnung? */
+export function awardProgress(deckId) {
+  const cards = listCards(deckId);
+  const level = deckAward(deckId);
+  if (!cards.length) return { level, next: 1, remaining: 0, total: 0 };
+  if (level >= 5) return { level, next: 5, remaining: 0, total: cards.length };
+  const next = level + 1;
+  return {
+    level,
+    next,
+    remaining: cards.filter((c) => forgeStage(c.srs) < next).length,
+    total: cards.length,
+  };
+}
 
 /* ---- Export / Import / Loeschen ----------------------------------------- */
 export function exportAll() {

@@ -1,9 +1,9 @@
 /* Startseite: Überblick, Tagespensum, Decks. */
 
 import { el, humanDue } from '../util.js';
-import { listDecks, listCards, deckStats, globalStats, getState, todayCount } from '../store.js';
+import { listDecks, listCards, deckStats, globalStats, getState, todayCount, deckAward } from '../store.js';
 import { t, icon, stageName } from '../themes.js';
-import { bar, empty, stageDots } from '../ui.js';
+import { bar, empty, stageDots, awardBadge } from '../ui.js';
 import { navigate } from '../router.js';
 
 export function render() {
@@ -51,6 +51,7 @@ export function render() {
         el('span.deck__name', {}, deck.name),
         el('span.deck__meta', {}, `${deck.sourceLanguage} → ${deck.targetLanguage} · ${s.total} Karten · ${stageName(avgStage)}`),
         el('div.row', { style: 'gap:6px; margin-top:6px' },
+          awardBadge(deckAward(deck.id)),
           s.due ? el('span.chip.chip--due', {}, `${s.due} fällig`) : null,
           s.new ? el('span.chip', {}, `${s.new} neu`) : null,
           !s.due && !s.new ? el('span.chip.chip--ok', {}, `nächste ${nextDueLabel(deck.id)}`) : null),

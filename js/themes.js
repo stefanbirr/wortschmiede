@@ -34,6 +34,16 @@ export const THEMES = {
       masteredShort: 'Meister',
     },
     stages: ['Rohling', 'Erhitzt', 'Geschmiedet', 'Gehärtet', 'Geschliffen', 'Meisterklinge'],
+    // Form der Auszeichnung kommt aus dem Theme (--award-clip), hier nur
+    // Farbe und Name. Kein Emoji: die sehen je nach Gerät anders aus und
+    // sind auf hellem Grund teils unsichtbar.
+    awards: [
+      { name: 'Kupferbarren', short: 'Kupfer', color: '#b06a3b' },
+      { name: 'Bronzebarren', short: 'Bronze', color: '#cd7f32' },
+      { name: 'Silberbarren', short: 'Silber', color: '#aab2b8' },
+      { name: 'Goldbarren', short: 'Gold', color: '#e0b13a' },
+      { name: 'Mithrilbarren', short: 'Mithril', color: '#7fd8e8' },
+    ],
     sfx: { hit: { type: 'square', freq: 180, sweep: 90, dur: 0.09 }, good: { type: 'triangle', freq: 520, sweep: 880, dur: 0.16 }, bad: { type: 'sawtooth', freq: 200, sweep: 70, dur: 0.22 } },
   },
 
@@ -63,6 +73,13 @@ export const THEMES = {
       masteredShort: 'Top',
     },
     stages: ['Neuling', 'Schüler', 'Kämpfer', 'Elite', 'Meister', 'Legende'],
+    awards: [
+      { name: 'Weißer Gürtel', short: 'Weiß', color: '#eceaf5' },
+      { name: 'Grüner Gürtel', short: 'Grün', color: '#4ce6b0' },
+      { name: 'Blauer Gürtel', short: 'Blau', color: '#4be1ff' },
+      { name: 'Roter Gürtel', short: 'Rot', color: '#ff4d6d' },
+      { name: 'Schwarzer Gürtel', short: 'Schwarz', color: '#2a2340' },
+    ],
     sfx: { hit: { type: 'sine', freq: 700, sweep: 1200, dur: 0.07 }, good: { type: 'sine', freq: 880, sweep: 1600, dur: 0.18 }, bad: { type: 'sine', freq: 320, sweep: 140, dur: 0.2 } },
   },
 
@@ -92,11 +109,18 @@ export const THEMES = {
       masteredShort: 'Sicher',
     },
     stages: ['Unbekannt', 'Gelesen', 'Geübt', 'Vertraut', 'Sicher', 'Beherrscht'],
+    awards: [
+      { name: 'Kupfersiegel', short: 'Kupfer', color: '#a1663a' },
+      { name: 'Bronzesiegel', short: 'Bronze', color: '#cd7f32' },
+      { name: 'Silbersiegel', short: 'Silber', color: '#9198a0' },
+      { name: 'Goldsiegel', short: 'Gold', color: '#d9a521' },
+      { name: 'Meistersiegel', short: 'Meister', color: '#8a5cc7' },
+    ],
     sfx: { hit: { type: 'sine', freq: 440, sweep: 460, dur: 0.05 }, good: { type: 'sine', freq: 660, sweep: 880, dur: 0.12 }, bad: { type: 'sine', freq: 240, sweep: 180, dur: 0.15 } },
   },
 };
 
-export const DEFAULT_THEME = 'forge';
+export const DEFAULT_THEME = 'pergament';
 let current = THEMES[DEFAULT_THEME];
 
 export function applyTheme(id) {
@@ -127,4 +151,7 @@ export function applyTheme(id) {
 export const theme = () => current;
 export const t = (key) => current.lexicon[key] ?? key;
 export const stageName = (n) => current.stages[Math.max(0, Math.min(5, n))];
+/** Auszeichnung zu Stufe 1..5; Stufe 0 heisst "noch keine". */
+export const award = (level) => (level >= 1 ? current.awards[Math.min(5, level) - 1] : null);
+export const awards = () => current.awards;
 export const icon = (key) => current.icons[key] ?? '';

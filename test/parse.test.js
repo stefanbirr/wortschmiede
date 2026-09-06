@@ -54,3 +54,21 @@ test('meldet Unbrauchbares statt still zu scheitern', () => {
   assert.equal(parseImport('').ok, false);
   assert.equal(parseImport('Tut mir leid, ich kann das Bild nicht lesen.').ok, false);
 });
+
+test('rettet JSON mit typografischen Anführungszeichen', () => {
+  const res = parseImport('{“name”: “Unit 1”, “targetLanguage”: “la”, “cards”: [{“front”: “denken”, “back”: “cōgitāre”}]}');
+  assert.equal(res.ok, true);
+  assert.equal(res.deck.name, 'Unit 1');
+  assert.equal(res.deck.cards[0].back, 'cōgitāre');
+});
+
+test('echte Anführungszeichen im Text bleiben erhalten', () => {
+  const res = parseImport('{"cards":[{"front":"sagen","back":"to say","example":"He said \\u201Chello\\u201D."}]}');
+  assert.equal(res.ok, true);
+  assert.equal(res.deck.cards[0].example, 'He said “hello”.');
+});
+
+test('mehrzeilige Übersetzungen werden zu einer Zeile', () => {
+  const res = parseImport('{"cards":[{"front":"sein","back":"esse","exampleTranslation":"Wo ist er?\\nWo befindet er sich?"}]}');
+  assert.equal(res.deck.cards[0].exampleTranslation, 'Wo ist er? / Wo befindet er sich?');
+});

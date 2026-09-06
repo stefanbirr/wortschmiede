@@ -23,6 +23,7 @@ Regeln:
 - ${examples ? 'Wenn die Seite Beispielsätze enthält, übernimm sie in "example" und übersetze sie in "exampleTranslation". Erfinde nichts dazu, wenn keine da sind.' : 'Keine Beispielsätze erzeugen.'}
 - Nichts erfinden, nichts weglassen, Reihenfolge der Seite beibehalten.
 - Umlaute und Akzente korrekt setzen.
+- Gerade Anführungszeichen verwenden ("), keine typografischen („ " " ").
 - Antworte NUR mit dem JSON, ohne Erklärung, ohne Markdown-Rahmen.
 
 Format:

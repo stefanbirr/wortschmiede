@@ -86,12 +86,26 @@ export function levenshtein(a, b) {
   return prev[b.length];
 }
 
-/** 'exact' | 'typo' | 'wrong' – Tippfehlertoleranz skaliert mit Wortlaenge. */
+const stripAccents = (s) => s.normalize('NFD').replace(/\p{Diacritic}/gu, '');
+
+/**
+ * 'exact' | 'accent' | 'typo' | 'wrong'
+ * 'accent' heisst: bis auf Laengenstriche/Akzente richtig (cogitare statt
+ * cōgitāre). Solche Zeichen stehen auf keiner Handytastatur – das als falsch
+ * zu werten waere Schikane, als voll richtig zu werten waere geschummelt.
+ * Also: zaehlt als "fast", Note "Schwer". Wer es ganz ignorieren will, schaltet
+ * in der Werkbank "Akzente/Umlaute ignorieren" ein – dann gilt es als exakt.
+ * Tippfehlertoleranz skaliert mit der Wortlaenge.
+ */
 export function gradeText(input, solutions, opts = {}) {
   const given = normalizeAnswer(input, opts);
   if (!given) return 'wrong';
   const cands = solutions.filter(Boolean).map((s) => normalizeAnswer(s, opts));
   if (cands.includes(given)) return 'exact';
+  if (!opts.ignoreAccents) {
+    const bare = stripAccents(given);
+    if (cands.some((c) => stripAccents(c) === bare)) return 'accent';
+  }
   if (!opts.typoTolerance) return 'wrong';
   for (const c of cands) {
     const budget = c.length <= 4 ? 0 : c.length <= 8 ? 1 : 2;

@@ -29,7 +29,14 @@ test('Alternativen zählen als richtig', () => {
 
 test('Akzente optional ignorieren', () => {
   assert.equal(gradeText('creme', ['crème'], { ignoreAccents: true }), 'exact');
-  assert.equal(gradeText('creme', ['crème']), 'wrong');
+  assert.equal(gradeText('creme', ['crème']), 'accent');
+});
+
+test('fehlende Längenstriche zählen als "fast" statt falsch', () => {
+  assert.equal(gradeText('cogitare', ['cōgitāre']), 'accent');
+  assert.equal(gradeText('cōgitāre', ['cōgitāre']), 'exact');
+  assert.equal(gradeText('cogitare', ['cōgitāre'], { ignoreAccents: true }), 'exact');
+  assert.equal(gradeText('spectare', ['cōgitāre']), 'wrong');
 });
 
 test('leere Eingabe ist falsch', () => {

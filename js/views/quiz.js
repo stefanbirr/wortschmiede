@@ -154,11 +154,13 @@ function sessionView(deck) {
         sliceCard(card, task.promptText);
       }
 
-      const box = el('div' + (ok ? (verdict === 'typo' ? '.verdict.verdict--near' : '.verdict.verdict--ok') : '.verdict.verdict--bad'), {},
+      const near = verdict === 'typo' || verdict === 'accent';
+      const box = el('div' + (ok ? (near ? '.verdict.verdict--near' : '.verdict.verdict--ok') : '.verdict.verdict--bad'), {},
         el('div.row.row--between', {},
-          el('b', {}, ok ? (verdict === 'typo' ? t('near') : t('correct')) : t('wrong')),
+          el('b', {}, ok ? (near ? t('near') : t('correct')) : t('wrong')),
           el('span.chip', {}, `${stageName(forgeStage(res.srs))} · ${humanDue(res.srs.due)}`)),
         el('div.verdict__solution', {}, task.solution),
+        verdict === 'accent' ? el('div.small.muted', {}, 'Nur die Längenstriche bzw. Akzente fehlten.') : null,
         task.card.alternatives?.length ? el('div.small.muted', {}, 'auch: ' + task.card.alternatives.join(', ')) : null,
         task.card.example ? el('div.small.muted', { style: 'margin-top:6px' }, `„${task.card.example}“`) : null,
         task.card.exampleTranslation ? el('div.small.muted', {}, task.card.exampleTranslation) : null,

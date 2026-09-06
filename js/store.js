@@ -6,6 +6,7 @@
 
 import { uid, dayKey, DAY, debounce } from './util.js';
 import { newSrs, forgeStage } from './fsrs.js';
+import { defaultDirectionFor } from './languages.js';
 
 const KEY = 'wortschmiede.v1';
 const LOG_LIMIT = 4000;            // Review-Log fuer spaetere FSRS-Optimierung
@@ -26,9 +27,11 @@ export const DEFAULT_SETTINGS = {
   swipeMode: true,                 // Wisch-Aufgaben in die Mischung nehmen
 };
 
+const STATE_VERSION = 2;
+
 function emptyState() {
   return {
-    version: 1,
+    version: STATE_VERSION,
     decks: {},
     cards: {},
     settings: { ...DEFAULT_SETTINGS },
@@ -37,8 +40,13 @@ function emptyState() {
   };
 }
 
+let migratedFrom = 0;          // > 0, wenn beim Laden ein älteres Format hochgezogen wurde
 let state = load();
 const listeners = new Set();
+
+// Eine Migration einmal aktiv festschreiben, damit sie nicht bei jedem Start
+// neu läuft und der Zustand auf der Platte dem im Speicher entspricht.
+if (migratedFrom) queueMicrotask(() => commit());
 
 function load() {
   try {
@@ -53,6 +61,8 @@ function load() {
 }
 
 function migrate(s) {
+  const from = Number(s.version) || 1;
+  if (from < STATE_VERSION) migratedFrom = from;
   const base = emptyState();
   const merged = { ...base, ...s };
   merged.settings = { ...base.settings, ...(s.settings || {}) };
@@ -60,12 +70,21 @@ function migrate(s) {
   merged.decks = s.decks || {};
   merged.cards = s.cards || {};
   merged.log = Array.isArray(s.log) ? s.log : [];
+  for (const deck of Object.values(merged.decks)) {
+    deck.direction ??= null;
+    // v1 -> v2: Latein- und Altgriechisch-Decks wurden in der falschen Richtung
+    // abgefragt (Deutsch -> Latein). Einmalig auf Übersetzen umstellen; wer es
+    // anders will, ändert es im Deck.
+    if (from < 2 && !deck.direction && defaultDirectionFor(deck.targetLanguage) === 'recognition') {
+      deck.direction = 'recognition';
+    }
+  }
   for (const card of Object.values(merged.cards)) {
     card.srs = { ...newSrs(), ...(card.srs || {}) };
     card.alternatives ??= [];
     card.tags ??= [];
   }
-  merged.version = 1;
+  merged.version = STATE_VERSION;
   return merged;
 }
 
@@ -101,13 +120,15 @@ export function listDecks() {
 }
 export const getDeck = (id) => state.decks[id] || null;
 
-export function createDeck({ name, sourceLanguage = 'de', targetLanguage = 'en', description = '' }) {
+export function createDeck({ name, sourceLanguage = 'de', targetLanguage = 'en', description = '', direction = null }) {
   const deck = {
     id: uid(),
     name: name?.trim() || 'Neues Deck',
     sourceLanguage,
     targetLanguage,
     description,
+    direction,                       // null = globale Einstellung der Werkbank
+
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };

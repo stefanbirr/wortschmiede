@@ -1,12 +1,7 @@
 /* Erzeugt den Prompt, den Schueler zusammen mit dem Buchfoto in ein
    beliebiges KI-Tool (Gemini, Claude, ChatGPT – Gratisversion reicht) kippen. */
 
-const LANG_NAMES = {
-  de: 'Deutsch', en: 'Englisch', fr: 'Französisch', es: 'Spanisch', it: 'Italienisch',
-  la: 'Latein', nl: 'Niederländisch', tr: 'Türkisch', ru: 'Russisch', pl: 'Polnisch', pt: 'Portugiesisch',
-};
-export const languageName = (code) => LANG_NAMES[code] || code;
-export const LANGUAGES = Object.entries(LANG_NAMES).map(([code, name]) => ({ code, name }));
+import { languageName } from './languages.js';
 
 export function buildPrompt({ source = 'de', target = 'en', deckName = 'Unit 1', examples = true } = {}) {
   const S = languageName(source);

@@ -19,6 +19,7 @@ const SHELL = [
   'js/session.js',
   'js/parse.js',
   'js/prompt.js',
+  'js/languages.js',
   'js/demo.js',
   'js/themes.js',
   'js/ui.js',

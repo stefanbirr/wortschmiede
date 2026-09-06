@@ -16,7 +16,7 @@
 
 import { shuffle, sample, clamp, gradeText } from './util.js';
 import { GRADE, schedule, retrievability } from './fsrs.js';
-import { listCards, getSettings, recordReview } from './store.js';
+import { listCards, getDeck, getSettings, recordReview } from './store.js';
 
 export const KIND_LABEL = {
   choice: 'Erkennen',
@@ -69,9 +69,19 @@ function interleave(due, fresh) {
   return out;
 }
 
+/**
+ * Richtung eines Decks: die Deck-Einstellung schlaegt die globale.
+ * Latein-Decks werden beim Import auf "recognition" gesetzt, Englisch-Decks
+ * bleiben bei der Vorgabe aus der Werkbank.
+ */
+export function effectiveDirection(deck, settings = getSettings()) {
+  return deck?.direction || settings.direction;
+}
+
 function chooseDirection(card, settings) {
-  if (settings.direction === 'production') return 'production';
-  if (settings.direction === 'recognition') return 'recognition';
+  const mode = effectiveDirection(getDeck(card.deckId), settings);
+  if (mode === 'production') return 'production';
+  if (mode === 'recognition') return 'recognition';
   // "both": erst erkennen, spaeter produzieren – und dann abwechseln.
   if (card.srs.reps < 2) return 'recognition';
   return Math.random() < 0.6 ? 'production' : 'recognition';
@@ -98,7 +108,11 @@ export function buildTask(card, pool, { speech = false } = {}) {
   const askWithFront = direction === 'production';   // Frage in bekannter Sprache
   const promptText = askWithFront ? card.front : card.back;
   const solution = askWithFront ? card.back : card.front;
-  const solutions = [solution, ...(askWithFront ? card.alternatives : [])];
+  // Alternativen gelten in beide Richtungen: KI-Tools füllen das Feld mal mit
+  // Synonymen der Zielsprache, mal – gerade bei Latein – mit den weiteren
+  // deutschen Bedeutungen. Beides als richtig zu werten ist die einzige
+  // Lesart, die keine korrekte Antwort fälschlich ablehnt.
+  const solutions = [solution, ...(card.alternatives || [])];
 
   const task = {
     id: card.id + ':' + Date.now(),

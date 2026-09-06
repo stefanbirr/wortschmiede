@@ -1,0 +1,12 @@
+{
+  "name": "wortschmiede",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vokabeltrainer als PWA – läuft ohne Installation im Browser, Daten bleiben lokal.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test \"test/**/*.test.js\"",
+    "start": "python3 -m http.server 8080"
+  },
+  "license": "MIT"
+}

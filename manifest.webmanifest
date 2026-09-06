@@ -1,0 +1,25 @@
+{
+  "id": "/wortschmiede/",
+  "name": "Wortschmiede – Vokabeltrainer",
+  "short_name": "Wortschmiede",
+  "description": "Vokabeln einprägen und abfragen. Läuft im Browser, funktioniert offline, alle Daten bleiben auf dem Gerät.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#15100d",
+  "theme_color": "#15100d",
+  "lang": "de",
+  "dir": "ltr",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "Abfrage starten", "url": "./#/schmieden" },
+    { "name": "Vokabeln importieren", "url": "./#/import" }
+  ]
+}

@@ -1,0 +1,148 @@
+/* ==========================================================================
+   Wortschmiede – Themes
+   Ein Theme = ein [data-theme="..."]-Block mit Design-Tokens.
+   Die Text-/Metaphern-Ebene (Stufennamen, Buttonwoerter) liegt in js/themes.js.
+   Anleitung fuer eigene Themes: docs/THEMES.md
+   ========================================================================== */
+
+/* ---------- 1) FORGE – mittelalterliche Schmiede in Blockoptik ---------- */
+[data-theme="forge"] {
+  --bg: #15100d;
+  --bg-elev: #241a14;
+  --bg-sunken: #100b08;
+  --ink: #f4e8d9;
+  --ink-dim: #b9a48c;
+  --ink-faint: #8a755f;
+  --accent: #ff7a18;
+  --accent-2: #ffc242;
+  --accent-ink: #1a1109;
+  --ok: #74c05b;
+  --warn: #e8a33d;
+  --bad: #e0554f;
+  --line: #4a3627;
+  --radius: 3px;
+  --radius-lg: 5px;
+  --btn-drop: #0c0806;
+  --shadow-card: 0 6px 0 #0c0806, 0 12px 26px rgba(0, 0, 0, .5);
+  --bevel-light: rgba(255, 222, 170, .16);
+  --bevel-dark: rgba(0, 0, 0, .5);
+  --font-display: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+  --display-transform: uppercase;
+  --display-spacing: .07em;
+  --display-shadow: 2px 2px 0 rgba(0, 0, 0, .65);
+  --card-face: linear-gradient(180deg, #33251a, #1f1710);
+  --tile-top: #5a4230;
+  --tile-bottom: #3b2b1f;
+  --glow:
+    radial-gradient(60% 22% at 50% 92%, rgba(255, 170, 40, .5), transparent 70%),
+    radial-gradient(130% 55% at 50% 112%, rgba(255, 106, 0, .45), transparent 72%);
+  --pixel: 1;
+  /* Steinmauer + Russ: zwei gestapelte Pixelraster */
+  --texture:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0 2px, transparent 2px 4px),
+    repeating-linear-gradient(90deg, rgba(0,0,0,.16) 0 2px, transparent 2px 4px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='64' height='64' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+  --brand-clip: polygon(42% 0, 58% 0, 58% 42%, 100% 58%, 100% 74%, 0 74%, 0 58%, 42% 42%);
+  --brand-mark: linear-gradient(180deg, #ffd873, #ff7a18);
+  /* Blockkante: harte 3px-Stufe hell oben/links, dunkel unten/rechts */
+  --frame:
+    inset 0 3px 0 var(--bevel-light), inset 3px 0 0 var(--bevel-light),
+    inset 0 -3px 0 var(--bevel-dark), inset -3px 0 0 var(--bevel-dark);
+  --deco: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 10' shape-rendering='crispEdges'%3E%3Cg fill='%23000000'%3E%3Crect x='2' y='2' width='12' height='1'/%3E%3Crect x='1' y='3' width='14' height='1'/%3E%3Crect x='1' y='4' width='14' height='1'/%3E%3Crect x='2' y='5' width='11' height='1'/%3E%3Crect x='4' y='6' width='7' height='1'/%3E%3Crect x='5' y='7' width='5' height='1'/%3E%3Crect x='3' y='8' width='9' height='1'/%3E%3Crect x='2' y='9' width='11' height='1'/%3E%3C/g%3E%3C/svg%3E");
+  --deco-opacity: .55;
+}
+/* Steinplatten-Anmutung fuer Flaechen im Schmiede-Theme */
+[data-theme="forge"] .panel,
+[data-theme="forge"] .choice,
+[data-theme="forge"] .deck {
+  background-image: repeating-linear-gradient(0deg, rgba(255, 255, 255, .022) 0 2px, transparent 2px 4px);
+}
+[data-theme="forge"] .quiz-prompt,
+[data-theme="forge"] .flipcard__face,
+[data-theme="forge"] .swipe-card {
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, .03) 0 2px, transparent 2px 4px),
+    var(--card-face);
+}
+
+/* ---------- 2) ANIME – helles Shonen-Trainingslager --------------------- */
+[data-theme="anime"] {
+  --bg: #150e22;
+  --bg-elev: #241640;
+  --bg-sunken: #0f0a1c;
+  --ink: #fdf3ff;
+  --ink-dim: #c3aee6;
+  --ink-faint: #907bb5;
+  --accent: #ff4d97;
+  --accent-2: #4be1ff;
+  --accent-ink: #16091f;
+  --ok: #4ce6b0;
+  --warn: #ffd166;
+  --bad: #ff5c7a;
+  --line: #4a2d7a;
+  --radius: 14px;
+  --radius-lg: 22px;
+  --btn-drop: #1a0f2e;
+  --shadow-card: 0 10px 30px rgba(255, 77, 151, .28), 0 2px 0 rgba(255, 255, 255, .12) inset;
+  --bevel-light: rgba(255, 255, 255, .22);
+  --bevel-dark: rgba(80, 20, 120, .35);
+  --font-display: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --display-transform: none;
+  --display-spacing: .01em;
+  --display-shadow: 0 0 14px rgba(75, 225, 255, .55);
+  --card-face: linear-gradient(160deg, #3a1f63 0%, #23133f 60%, #2c1a4d 100%);
+  --tile-top: #5b2f96;
+  --tile-bottom: #3a1d63;
+  --glow: radial-gradient(120% 70% at 50% -10%, rgba(255, 77, 151, .35), transparent 65%),
+          radial-gradient(90% 50% at 50% 110%, rgba(75, 225, 255, .28), transparent 70%);
+  --pixel: 0;
+  /* Speedlines + Sternenstaub */
+  --texture:
+    repeating-linear-gradient(115deg, rgba(255,255,255,.035) 0 1px, transparent 1px 26px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cg fill='%23ffffff' opacity='.18'%3E%3Ccircle cx='18' cy='24' r='1.4'/%3E%3Ccircle cx='84' cy='12' r='1'/%3E%3Ccircle cx='102' cy='72' r='1.6'/%3E%3Ccircle cx='38' cy='96' r='1'/%3E%3Ccircle cx='66' cy='54' r='1.2'/%3E%3C/g%3E%3C/svg%3E");
+  --brand-clip: polygon(50% 0, 62% 36%, 100% 38%, 70% 60%, 82% 100%, 50% 76%, 18% 100%, 30% 60%, 0 38%, 38% 36%);
+  --brand-mark: linear-gradient(135deg, #4be1ff, #ff4d97);
+  --icon-filter: drop-shadow(0 0 6px rgba(75, 225, 255, .6));
+  --frame: inset 0 1px 0 rgba(255, 255, 255, .28), 0 0 22px rgba(255, 77, 151, .16);
+  --deco: radial-gradient(circle at 50% 100%, rgba(255, 77, 151, .55) 0 22%, transparent 60%);
+  --deco-opacity: .5;
+}
+[data-theme="anime"] .btn { font-weight: 600; }
+[data-theme="anime"] .flipcard__face, [data-theme="anime"] .swipe-card { backdrop-filter: blur(2px); }
+
+/* ---------- 3) PERGAMENT – hell, ruhig, augenschonend ------------------- */
+[data-theme="pergament"] {
+  --bg: #f2e8d5;
+  --bg-elev: #fbf5e9;
+  --bg-sunken: #e8dcc4;
+  --ink: #2f2618;
+  --ink-dim: #6b5c45;
+  --ink-faint: #97876c;
+  --accent: #9a5b1f;
+  --accent-2: #c98b2e;
+  --accent-ink: #fff8ec;
+  --ok: #3f7d3a;
+  --warn: #b57614;
+  --bad: #a52f2a;
+  --line: #cbb790;
+  --radius: 6px;
+  --radius-lg: 10px;
+  --btn-drop: #d6c5a2;
+  --shadow-card: 0 4px 0 #ddcdae, 0 8px 18px rgba(90, 70, 40, .18);
+  --bevel-light: rgba(255, 255, 255, .7);
+  --bevel-dark: rgba(140, 115, 70, .25);
+  --font-display: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --display-transform: none;
+  --display-spacing: .01em;
+  --display-shadow: none;
+  --card-face: linear-gradient(180deg, #fffaf0, #f3e8d2);
+  --tile-top: #f7edd9;
+  --tile-bottom: #e6d7b8;
+  --glow: radial-gradient(120% 60% at 50% 0%, rgba(201, 139, 46, .16), transparent 70%);
+  --pixel: 0;
+  --texture: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cfilter id='p'%3E%3CfeTurbulence baseFrequency='.7' numOctaves='3'/%3E%3C/filter%3E%3Crect width='80' height='80' filter='url(%23p)' opacity='.055'/%3E%3C/svg%3E");
+  --brand-clip: polygon(50% 0, 100% 30%, 100% 100%, 0 100%, 0 30%);
+  --brand-mark: linear-gradient(180deg, #c98b2e, #9a5b1f);
+}
+[data-theme="pergament"] { --frame: inset 0 1px 0 var(--bevel-light); --deco: none; }
+[data-theme="pergament"] .topbar, [data-theme="pergament"] .tabbar { backdrop-filter: none; }

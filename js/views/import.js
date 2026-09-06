@@ -1,7 +1,8 @@
 /* Import: Prompt holen -> KI-Antwort einfügen -> prüfen -> speichern. */
 
 import { el, copyToClipboard } from '../util.js';
-import { buildPrompt, LANGUAGES } from '../prompt.js';
+import { buildPrompt } from '../prompt.js';
+import { LANGUAGES, languageName, defaultDirectionFor } from '../languages.js';
 import { parseImport } from '../parse.js';
 import { listDecks, createDeck, addCards } from '../store.js';
 import { toast } from '../ui.js';
@@ -20,6 +21,16 @@ export function render() {
   const deckName = el('input', { type: 'text', value: `Unit ${new Date().getMonth() + 1}`, placeholder: 'z. B. Unit 3 – At the market' });
   const withExamples = el('input', { type: 'checkbox', checked: true });
 
+  // Bei Latein/Altgriechisch wird übersetzt statt produziert – das steht hier,
+  // damit niemand nach dem Import über die Abfragerichtung stolpert.
+  const dirNote = el('p.small.muted');
+  const refreshNote = () => {
+    const t = languageName(target.value);
+    dirNote.textContent = defaultDirectionFor(target.value) === 'recognition'
+      ? `Abfrage: ${t} → ${languageName(source.value)}, du übersetzt ins Deutsche. Umstellbar im Deck.`
+      : `Abfrage: ${languageName(source.value)} → ${t}, du schreibst ${t}. Umstellbar im Deck.`;
+  };
+
   const promptBox = el('div.codebox', { id: 'prompt-box' });
   const refreshPrompt = () => {
     promptBox.textContent = buildPrompt({
@@ -29,8 +40,9 @@ export function render() {
       examples: withExamples.checked,
     });
   };
-  [source, target, deckName, withExamples].forEach((n) => n.addEventListener('input', refreshPrompt));
+  [source, target, deckName, withExamples].forEach((n) => n.addEventListener('input', () => { refreshPrompt(); refreshNote(); }));
   refreshPrompt();
+  refreshNote();
 
   const input = el('textarea', {
     placeholder: 'Antwort der KI hier einfügen (JSON). Notfalls tut es auch eine einfache Liste: Wort – Übersetzung, eine pro Zeile.',
@@ -79,10 +91,12 @@ export function render() {
     if (!parsed) return;
     let deckId = targetDeck.value;
     if (deckId === '__new') {
+      const targetLanguage = parsed.targetLanguage || target.value;
       const deck = createDeck({
         name: deckName.value.trim() || parsed.name,
         sourceLanguage: parsed.sourceLanguage || source.value,
-        targetLanguage: parsed.targetLanguage || target.value,
+        targetLanguage,
+        direction: defaultDirectionFor(targetLanguage),
       });
       deckId = deck.id;
     }
@@ -115,6 +129,7 @@ export function render() {
       el('div.row', {},
         el('label.field', { style: 'flex:1 1 40%' }, el('span', {}, 'Ich kann'), source),
         el('label.field', { style: 'flex:1 1 40%' }, el('span', {}, 'Ich lerne'), target)),
+      dirNote,
       el('label.field', {}, el('span', {}, 'Deckname'), deckName),
       el('label.switch', {}, 'Beispielsätze mitnehmen', withExamples),
       promptBox,

@@ -7,6 +7,8 @@ import { stageName, t, icon } from '../themes.js';
 import { bar, stageDots, toast, confirmDialog, modal } from '../ui.js';
 import { navigate } from '../router.js';
 import { speak, speechAvailable } from '../fx.js';
+import { directionOptions } from '../languages.js';
+import { effectiveDirection } from '../session.js';
 
 export function render(params) {
   const deck = getDeck(params.deckId);
@@ -28,6 +30,9 @@ export function render(params) {
     el('div.row', { style: 'margin-top:10px; gap:6px' },
       s.stages.map((n, i) => n ? el('span.chip', {}, `${stageName(i)}: ${n}`) : null)),
   ));
+
+  const dirLabel = (directionOptions(deck).find(([v]) => v === effectiveDirection(deck)) || [])[1];
+  root.append(el('p.small.muted', { style: 'margin:-4px 0 0' }, `Abfrage: ${dirLabel || 'gemischt'}`));
 
   root.append(el('div.row.row--equal', {},
     el('button.btn.btn--primary', { style: 'flex:1 1 46%', onclick: () => navigate(`/schmieden/${deck.id}`) }, `${icon('quiz')} ${t('quizStart')}`),
@@ -79,17 +84,29 @@ function editDeck(deck) {
   const name = el('input', { type: 'text', value: deck.name });
   const src = el('input', { type: 'text', value: deck.sourceLanguage, maxlength: '5' });
   const tgt = el('input', { type: 'text', value: deck.targetLanguage, maxlength: '5' });
+  const dir = el('select', {},
+    el('option', { value: '', selected: deck.direction ? null : true }, 'Standard aus der Werkbank'),
+    directionOptions(deck).map(([value, label]) =>
+      el('option', { value, selected: deck.direction === value ? true : null }, label)));
+
   modal({
     title: 'Deck bearbeiten',
     body: el('div', {},
       el('label.field', {}, el('span', {}, 'Name'), name),
       el('div.row', {},
         el('label.field', { style: 'flex:1' }, el('span', {}, 'Ausgangssprache'), src),
-        el('label.field', { style: 'flex:1' }, el('span', {}, 'Zielsprache'), tgt))),
+        el('label.field', { style: 'flex:1' }, el('span', {}, 'Zielsprache'), tgt)),
+      el('label.field', {}, el('span', {}, 'Abfragerichtung'), dir),
+      el('p.small.muted', {}, 'Gilt nur für dieses Deck. Bei Latein und Altgriechisch wird übersetzt statt geschrieben.')),
     actions: [
       { label: 'Abbrechen' },
       { label: 'Speichern', primary: true, onClick: () => {
-        updateDeck(deck.id, { name: name.value.trim() || deck.name, sourceLanguage: src.value.trim() || 'de', targetLanguage: tgt.value.trim() || 'en' });
+        updateDeck(deck.id, {
+          name: name.value.trim() || deck.name,
+          sourceLanguage: src.value.trim() || 'de',
+          targetLanguage: tgt.value.trim() || 'en',
+          direction: dir.value || null,
+        });
         toast('Gespeichert.');
         navigate(`/deck/${deck.id}`);
       } },

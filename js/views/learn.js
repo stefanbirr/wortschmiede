@@ -8,7 +8,7 @@
 import { el, shuffle, humanDue } from '../util.js';
 import { listDecks, listCards, getDeck, getSettings, deckStats } from '../store.js';
 import { GRADE } from '../fsrs.js';
-import { applyGrade } from '../session.js';
+import { applyGrade, effectiveDirection } from '../session.js';
 import { speak, speechAvailable, sfx, buzz } from '../fx.js';
 import { t, icon, stageName } from '../themes.js';
 import { bar, empty, toast, stageDots } from '../ui.js';
@@ -65,7 +65,8 @@ function cardStack(deck) {
   let cards = [...cards0];
   let index = 0;
   let flipped = false;
-  let flip2back = settings.direction !== 'recognition';   // Vorderseite = bekannte Sprache
+  // Vorderseite ist die Sprache, aus der abgefragt wird – bei Latein also Latein.
+  let flip2back = effectiveDirection(deck, settings) !== 'recognition';
 
   const root = el('div.stack');
   const head = el('div.row.row--between');

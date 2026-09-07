@@ -44,7 +44,7 @@ export function render(params) {
       ap.level >= 5
         ? 'Alle Vokabeln auf der höchsten Stufe. Mehr geht nicht.'
         // Die Auszeichnungsnamen sind je Theme anders gebeugt ("Schwarzer Gürtel",
-        // "Mithrilbarren") – als Zitat gesetzt bleibt der Satz in jedem Fall richtig.
+        // "Meisterpokal") – als Zitat gesetzt bleibt der Satz in jedem Fall richtig.
         : `Noch ${ap.remaining} von ${ap.total} ${ap.total === 1 ? 'Vokabel' : 'Vokabeln'} bis zur Auszeichnung „${nextAward?.name ?? 'nächster Rang'}“ – die gibt es erst, wenn jede Karte die Stufe erreicht hat.`)));
 
   root.append(el('div.row.row--equal', {},

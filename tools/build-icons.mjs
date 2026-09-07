@@ -38,6 +38,24 @@ const GAME_ICONS = {
   stars: 'delapouite/star-formation',
   sparkles: 'delapouite/sparkles',
   katana: 'delapouite/katana',
+  // Fußball
+  soccerBall: 'delapouite/soccer-ball',
+  soccerField: 'delapouite/soccer-field',
+  whistle: 'delapouite/whistle',
+  trophyCup: 'delapouite/trophy-cup',
+  // Dunkler Wald
+  oak: 'lorc/oak',
+  pineTree: 'lorc/pine-tree',
+  torch: 'delapouite/torch',
+  runeStone: 'lorc/rune-stone',
+  bowArrow: 'delapouite/bow-arrow',
+  leaf: 'lorc/leaf-swirl',
+  // Weltraum
+  rocket: 'lorc/rocket',
+  ringedPlanet: 'lorc/ringed-planet',
+  starMedal: 'delapouite/star-medal',
+  spaceship: 'delapouite/spaceship',
+  helmet: 'delapouite/astronaut-helmet',
 };
 
 /* Lucide – ISC-Lizenz, für neutrale Bedienelemente. */
@@ -150,8 +168,9 @@ worden – die App lädt zur Laufzeit nichts von fremden Servern nach.
 
 ## game-icons.net
 
-Thematische Motive: Amboss, Hammer, Barren, Wachssiegel, Gürtel, Bücher,
-Schriftrolle, Federkiel, Zahnräder, Kamera, Lorbeer, Funken, Sterne, Katana.
+Thematische Motive für alle Themes: Amboss, Hammer, Barren, Wachssiegel,
+Gürtel, Bücher, Schriftrolle, Federkiel, Zahnräder, Kamera, Lorbeer, Funken,
+Sterne, Katana, Fußball und Pokal, Eiche und Runenstein, Rakete und Planet.
 
 Lizenz: [Creative Commons BY 3.0](https://creativecommons.org/licenses/by/3.0/)
 Quelle: <https://game-icons.net>

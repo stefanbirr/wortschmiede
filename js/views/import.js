@@ -4,7 +4,7 @@ import { el, copyToClipboard } from '../util.js';
 import { buildPrompt } from '../prompt.js';
 import { LANGUAGES, languageName, defaultDirectionFor } from '../languages.js';
 import { parseImport } from '../parse.js';
-import { listDecks, createDeck, addCards } from '../store.js';
+import { listDecks, createDeck, addCards, requestPersistence } from '../store.js';
 import { toast } from '../ui.js';
 import { navigate } from '../router.js';
 import { DEMO_DECK } from '../demo.js';
@@ -102,6 +102,8 @@ export function render() {
       deckId = deck.id;
     }
     const { added, skipped } = addCards(deckId, parsed.cards);
+    // Jetzt sind Daten da, die es zu schützen lohnt.
+    requestPersistence();
     toast(`${added} Vokabeln übernommen${skipped ? `, ${skipped} übersprungen (Dubletten)` : ''}.`);
     navigate(`/deck/${deckId}`);
   });

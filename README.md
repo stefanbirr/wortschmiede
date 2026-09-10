@@ -120,8 +120,26 @@ lädt keine externen Skripte, Fonts oder Analytics und schickt nichts irgendwohi
 Das Foto und der Chat bleiben beim KI-Tool der eigenen Wahl – die App sieht nur den
 Text, den man einfügt.
 
-Kehrseite: Browserdaten löschen bedeutet Vokabeln weg. Deshalb unter
-**Werkbank → Exportieren** regelmäßig eine Sicherungsdatei ziehen.
+### Was bei einem Update passiert
+
+Nichts. Der Speicher hängt an der Herkunft der Seite, nicht an der Version der
+Dateien: Ein Update tauscht nur HTML, JS und CSS aus, der Lernstand bleibt
+liegen. Neue Felder ergänzt die App beim Laden, ohne bestehende zu verlieren –
+und legt vor jeder Formatänderung eine Kopie des alten Standes an.
+
+Ist der gespeicherte Stand einmal beschädigt (etwa weil ein Speichervorgang bei
+vollem Speicher abbrach), startet die App **nicht** stillschweigend leer:
+Der Rohtext wird beiseitegelegt, die App meldet sich beim Start und bietet ihn
+als Datei an. In der Werkbank stehen alle solchen Kopien zum Herunterladen.
+
+Nach dem ersten Import bittet die App den Browser außerdem, den Speicher nicht
+automatisch zu räumen (`navigator.storage.persist()`). Ob er zustimmt, zeigt die
+Werkbank offen an – Chrome tut es meist erst, wenn die App zum Startbildschirm
+hinzugefügt wurde.
+
+Kehrseite bleibt: Browserdaten löschen bedeutet Vokabeln weg, und ein zweites
+Gerät hat seinen eigenen Bestand. Deshalb unter **Werkbank → Exportieren**
+regelmäßig eine Sicherungsdatei ziehen.
 
 ## Entwicklung
 

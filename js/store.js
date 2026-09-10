@@ -9,6 +9,8 @@ import { newSrs, forgeStage } from './fsrs.js';
 import { defaultDirectionFor } from './languages.js';
 
 const KEY = 'wortschmiede.v1';
+const BACKUP_PREFIX = 'wortschmiede.backup.';   // Kopie vor jeder Formatmigration
+const RESCUE_PREFIX = 'wortschmiede.rescue.';   // unlesbarer Stand, beiseitegelegt
 const LOG_LIMIT = 4000;            // Review-Log fuer spaetere FSRS-Optimierung
 
 export const DEFAULT_SETTINGS = {
@@ -41,6 +43,7 @@ function emptyState() {
 }
 
 let migratedFrom = 0;          // > 0, wenn beim Laden ein älteres Format hochgezogen wurde
+let loadIssue = null;          // gesetzt, wenn der gespeicherte Stand nicht lesbar war
 let state = load();
 const listeners = new Set();
 
@@ -49,20 +52,95 @@ const listeners = new Set();
 if (migratedFrom) queueMicrotask(() => commit());
 
 function load() {
+  let raw = null;
   try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return emptyState();
-    const parsed = JSON.parse(raw);
-    return migrate(parsed);
+    raw = localStorage.getItem(KEY);
   } catch (err) {
-    console.warn('[wortschmiede] Speicher unlesbar, starte leer', err);
+    // Speicher komplett gesperrt (privater Modus, Blockierung durch den Browser)
+    loadIssue = { kind: 'blocked', error: String(err) };
+    return emptyState();
+  }
+  if (!raw) return emptyState();
+
+  try {
+    return migrate(JSON.parse(raw), raw);
+  } catch (err) {
+    /*
+     * Der gespeicherte Stand ist beschädigt – etwa weil ein Schreibvorgang bei
+     * vollem Speicher abbrach. Früher startete die App hier stillschweigend leer
+     * und überschrieb den Rest beim ersten Klick; die Vokabeln waren dann
+     * endgültig weg. Jetzt wird der Rohtext unter einem eigenen Schlüssel
+     * beiseitegelegt und die App meldet sich, damit man ihn retten kann.
+     */
+    const rescueKey = RESCUE_PREFIX + new Date().toISOString().replace(/[:.]/g, '-');
+    try {
+      localStorage.setItem(rescueKey, raw);
+      loadIssue = { kind: 'unreadable', rescueKey, bytes: raw.length, error: String(err) };
+    } catch (writeErr) {
+      // Nicht mal die Kopie passt noch rein – dann wenigstens nichts überschreiben.
+      loadIssue = { kind: 'unreadable', rescueKey: null, bytes: raw.length, error: String(err), writeError: String(writeErr) };
+    }
+    console.warn('[wortschmiede] Gespeicherter Stand unlesbar, Kopie abgelegt unter', rescueKey, err);
     return emptyState();
   }
 }
 
-function migrate(s) {
+/** Was beim Laden schiefging – für die Warnung beim Start. */
+export const getLoadIssue = () => loadIssue;
+export const clearLoadIssue = () => { loadIssue = null; };
+
+/** Beiseitegelegte Stände: Migrations-Backups und Rettungskopien. */
+export function listSafetyCopies() {
+  const out = [];
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || (!k.startsWith(BACKUP_PREFIX) && !k.startsWith(RESCUE_PREFIX))) continue;
+      out.push({
+        key: k,
+        kind: k.startsWith(BACKUP_PREFIX) ? 'backup' : 'rescue',
+        bytes: (localStorage.getItem(k) || '').length,
+      });
+    }
+  } catch { /* Speicher nicht lesbar */ }
+  return out.sort((a, b) => a.key.localeCompare(b.key));
+}
+
+export const readSafetyCopy = (key) => {
+  try { return localStorage.getItem(key); } catch { return null; }
+};
+export const deleteSafetyCopy = (key) => {
+  try { localStorage.removeItem(key); } catch { /* egal */ }
+};
+
+/**
+ * Bittet den Browser, den Speicher nicht automatisch zu räumen. Ohne das
+ * werfen iOS und Android bei Platzmangel oder längerer Nichtnutzung auch
+ * Vokabeln weg. Wir fragen erst, wenn wirklich Daten da sind – vorher wäre
+ * die Nachfrage für den Nutzer nicht einzuordnen.
+ */
+export async function requestPersistence() {
+  try {
+    if (!navigator.storage?.persist) return null;
+    if (await navigator.storage.persisted?.()) return true;
+    return await navigator.storage.persist();
+  } catch { return null; }
+}
+
+export async function isPersisted() {
+  try { return (await navigator.storage?.persisted?.()) ?? null; } catch { return null; }
+}
+
+function migrate(s, raw) {
   const from = Number(s.version) || 1;
-  if (from < STATE_VERSION) migratedFrom = from;
+  if (from < STATE_VERSION) {
+    migratedFrom = from;
+    // Vor jeder Formatänderung eine Kopie des alten Standes ablegen. Kostet
+    // einmal denselben Platz, rettet aber alles, falls eine Migration daneben geht.
+    if (raw) {
+      try { localStorage.setItem(`${BACKUP_PREFIX}v${from}`, raw); } catch { /* kein Platz – dann eben ohne */ }
+    }
+  }
   const base = emptyState();
   const merged = { ...base, ...s };
   merged.settings = { ...base.settings, ...(s.settings || {}) };

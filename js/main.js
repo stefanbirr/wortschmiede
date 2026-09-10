@@ -1,11 +1,11 @@
 /* App-Start: Theme setzen, Routen registrieren, Service Worker anmelden. */
 
-import { $, el } from './util.js';
+import { $, el, download } from './util.js';
 import { icon as svgIcon } from './icons.js';
-import { getSettings, subscribe, globalStats, getState } from './store.js';
+import { getSettings, subscribe, globalStats, getState, getLoadIssue, clearLoadIssue, readSafetyCopy } from './store.js';
 import { applyTheme, t, iconEl } from './themes.js';
 import { defineRoutes, startRouter, navigate, back, currentPath } from './router.js';
-import { toast } from './ui.js';
+import { toast, modal } from './ui.js';
 
 import * as home from './views/home.js';
 import * as learn from './views/learn.js';
@@ -51,6 +51,35 @@ function renderTopStats() {
 
 $('#btn-back').addEventListener('click', () => back());
 subscribe(() => renderTopStats());
+
+/*
+ * Wenn der gespeicherte Stand beim Start nicht lesbar war, darf das nicht
+ * unbemerkt bleiben: Die App startet dann leer und würde den Rest beim ersten
+ * Klick überschreiben. Der Rohtext liegt als Kopie bereit – hier bekommt der
+ * Nutzer ihn als Datei.
+ */
+const issue = getLoadIssue();
+if (issue && issue.kind === 'unreadable') {
+  modal({
+    title: 'Gespeicherte Daten unlesbar',
+    body: el('div', {},
+      el('p', {}, 'Der gespeicherte Lernstand konnte nicht gelesen werden – vermutlich wurde ein Speichervorgang unterbrochen. Wortschmiede startet deshalb leer.'),
+      issue.rescueKey
+        ? el('p', {}, 'Die Originaldaten wurden nicht überschrieben. Lade sie als Datei herunter und bewahre sie auf – oft lassen sich die Vokabeln daraus wiederherstellen.')
+        : el('p', {}, 'Es war kein Platz mehr, um eine Kopie anzulegen. Lösche Browserdaten anderer Seiten und lade Wortschmiede neu, bevor du weiterlernst.'),
+      el('p.small.muted', {}, `Betroffen: ${issue.bytes >= 1024 ? Math.round(issue.bytes / 1024) + ' KB' : (issue.bytes || 0) + ' Zeichen'}`)),
+    actions: [
+      { label: 'Verstanden', onClick: () => clearLoadIssue() },
+      issue.rescueKey
+        ? { label: 'Daten sichern', primary: true, onClick: () => {
+            const raw = readSafetyCopy(issue.rescueKey);
+            if (raw) download(`wortschmiede-rettung-${new Date().toISOString().slice(0, 10)}.json`, raw);
+            clearLoadIssue();
+          } }
+        : null,
+    ].filter(Boolean),
+  });
+}
 
 window.addEventListener('ws:storage-full', () => {
   toast('Der Speicher dieses Browsers ist voll. Exportiere ein Backup und lösche alte Decks.', 6000);

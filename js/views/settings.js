@@ -1,7 +1,8 @@
 /* Werkbank: Aussehen, Lernparameter, Daten. */
 
 import { el, download } from '../util.js';
-import { getSettings, setSettings, exportAll, importBackup, wipeAll, storageUsage, globalStats, getState } from '../store.js';
+import { getSettings, setSettings, exportAll, importBackup, wipeAll, storageUsage, globalStats, getState,
+  requestPersistence, isPersisted, listSafetyCopies, readSafetyCopy, deleteSafetyCopy } from '../store.js';
 import { THEMES, applyTheme, t } from '../themes.js';
 import { toast, confirmDialog } from '../ui.js';
 import { navigate } from '../router.js';
@@ -92,6 +93,54 @@ export function render() {
     }
   });
 
+  /* Speicherzustand: Ist die Ablage vor automatischem Aufräumen geschützt? */
+  const persistLine = el('p.small.muted', { style: 'margin:8px 0 0' }, 'Prüfe Speicherzustand …');
+  const persistBtn = el('button.btn.btn--sm', { hidden: true, onclick: async () => {
+    const ok = await requestPersistence();
+    toast(ok ? 'Der Browser schützt deine Daten jetzt vor automatischem Aufräumen.'
+             : 'Der Browser hat das abgelehnt – exportiere lieber regelmäßig ein Backup.');
+    showPersistState();
+  } }, '🔒 Dauerhaft speichern');
+
+  async function showPersistState() {
+    const state = await isPersisted();
+    if (state === null) {
+      persistLine.textContent = 'Dein Browser sagt nicht, ob er die Daten dauerhaft speichert. Sichere sie regelmäßig als Datei.';
+      persistBtn.hidden = true;
+    } else if (state) {
+      persistLine.textContent = 'Dauerhaft gespeichert: Der Browser räumt diese Daten nicht von selbst weg.';
+      persistBtn.hidden = true;
+    } else {
+      persistLine.textContent = 'Nicht dauerhaft gespeichert: Bei Platzmangel oder längerer Nichtnutzung kann der Browser die Daten löschen.';
+      persistBtn.hidden = false;
+    }
+  }
+  showPersistState();
+
+  /* Beiseitegelegte Kopien – aus Migrationen oder aus einem beschädigten Stand. */
+  const copies = listSafetyCopies();
+  const copyList = el('div.stack', { style: 'margin-top:10px' });
+  if (copies.length) {
+    copyList.append(el('p.small.muted', {}, 'Sicherungskopien im Browser:'));
+    for (const c of copies) {
+      copyList.append(el('div.vitem', {},
+        el('div.vitem__text', {},
+          el('div.vitem__front', {}, c.kind === 'rescue' ? 'Gerettete Daten' : 'Vor einer Formatänderung'),
+          el('div.vitem__back.mono', {}, `${c.key} · ${c.bytes >= 1024 ? Math.round(c.bytes / 1024) + ' KB' : c.bytes + ' Zeichen'}`)),
+        el('button.btn.btn--sm', { onclick: () => {
+          const raw = readSafetyCopy(c.key);
+          if (raw) download(`${c.key}.json`, raw);
+        } }, svgIcon('download', { size: 15 })),
+        el('button.btn.btn--sm.btn--danger', { onclick: () => {
+          confirmDialog('Kopie löschen?', 'Diese Sicherungskopie wird aus dem Browser entfernt.', () => {
+            deleteSafetyCopy(c.key);
+            toast('Kopie gelöscht.');
+            navigate('/einstellungen');
+          });
+        }, 'aria-label': 'Kopie löschen' }, svgIcon('trash', { size: 15 }))));
+    }
+  }
+
   root.append(el('section.panel', {},
     el('h2', {}, 'Deine Daten'),
     el('p.small.muted', {}, `${g.decks} Decks · ${g.total} Vokabeln · ${usage.kb} KB auf diesem Gerät. Es gibt keinen Server und kein Konto – ohne Sicherung sind die Daten weg, wenn du Browserdaten löschst.`),
@@ -99,6 +148,9 @@ export function render() {
       el('button.btn', { onclick: () => download(`wortschmiede-${new Date().toISOString().slice(0, 10)}.json`, exportAll()) }, svgIcon('download', { size: 17 }), 'Exportieren'),
       el('button.btn', { onclick: () => fileInput.click() }, svgIcon('upload', { size: 17 }), 'Backup laden'),
       fileInput),
+    persistLine,
+    el('div', { style: 'margin-top:8px' }, persistBtn),
+    copyList,
     el('button.btn.btn--danger.btn--block', { style: 'margin-top:10px',
       onclick: () => confirmDialog('Wirklich alles löschen?', 'Alle Decks, Vokabeln und der Lernfortschritt auf diesem Gerät werden gelöscht.',
         () => { wipeAll(); applyTheme('forge'); toast('Alles gelöscht.'); navigate('/'); }),

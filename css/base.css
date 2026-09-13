@@ -39,7 +39,16 @@
   --deco: none;               /* dekorative Silhouette am unteren Rand */
   --tap: 48px;
   --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-t: env(safe-area-inset-top, 0px);
   --tabbar-h: 76px;           /* wird von main.js real gemessen */
+  /* Die Kopfleiste reicht unter die Statusleiste des Geraets (siehe
+     apple-mobile-web-app-status-bar-style in der index.html). Deren Symbole
+     zeichnet iOS dort immer hell, darum muss die Leiste in jedem Theme dunkel
+     bleiben - jedes setzt ihre Farbe in css/themes.css selbst. Der Notnagel
+     hier greift nur fuer ein Theme, das den Wert vergisst. */
+  --topbar-bg: color-mix(in srgb, var(--bg) 88%, black);
+  --topbar-ink: var(--ink);
+  --topbar-dim: var(--ink-dim);
 }
 
 /* ---- Reset ------------------------------------------------------------- */
@@ -96,17 +105,18 @@ body[data-focus="1"] .forge-glow::after { bottom: 12px; opacity: calc(var(--deco
   position: sticky; top: 0; z-index: 20;
   display: flex; align-items: center; gap: 10px;
   padding: 10px 12px;
-  padding-top: calc(10px + env(safe-area-inset-top, 0px));
-  background: color-mix(in srgb, var(--bg) 88%, black);
+  padding-top: calc(10px + var(--safe-t));
+  background: var(--topbar-bg);
+  color: var(--topbar-ink);
   border-bottom: 2px solid var(--line);
   backdrop-filter: blur(6px);
 }
 .topbar__back {
-  background: none; border: 0; color: var(--ink-dim);
+  background: none; border: 0; color: var(--topbar-dim);
   font-size: 1.1rem; padding: 6px 8px; cursor: pointer;
   min-width: 36px;
 }
-.brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--ink); }
+.brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--topbar-ink); }
 .brand__mark {
   width: 22px; height: 22px; flex: none;
   background: var(--brand-mark, linear-gradient(135deg, var(--accent-2), var(--accent)));
@@ -119,7 +129,7 @@ body[data-focus="1"] .forge-glow::after { bottom: 12px; opacity: calc(var(--deco
   font-size: .95rem;
   text-shadow: var(--display-shadow);
 }
-.topbar__stats { margin-left: auto; display: flex; gap: 10px; font-size: .8rem; color: var(--ink-dim); }
+.topbar__stats { margin-left: auto; display: flex; gap: 10px; font-size: .8rem; color: var(--topbar-dim); }
 .topbar__stats > span { display: inline-flex; align-items: center; gap: 4px; }
 .topbar__stats b { color: var(--accent-2); font-variant-numeric: tabular-nums; }
 
@@ -469,7 +479,9 @@ textarea { min-height: 160px; resize: vertical; font-family: ui-monospace, SFMon
   max-width: min(92vw, 460px);
 }
 @keyframes toast-in { from { opacity: 0; transform: translateY(10px); } }
-.modal-host { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; background: rgba(0, 0, 0, .6); padding: 16px; }
+/* Der obere Innenabstand haelt Dialoge von der Statusleiste frei - die Seite
+   reicht auf dem Telefon bis unter die Uhr. */
+.modal-host { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; background: rgba(0, 0, 0, .6); padding: calc(16px + var(--safe-t)) 16px calc(16px + var(--safe-b)); }
 .modal { background: var(--bg-elev); border: 3px solid var(--line); border-radius: var(--radius-lg); padding: 18px; max-width: 440px; width: 100%; box-shadow: var(--shadow-card); }
 
 /* ---- Vokabelliste ------------------------------------------------------ */

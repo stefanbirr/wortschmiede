@@ -1,5 +1,14 @@
 # Eigenes Theme bauen
 
+Mitgeliefert sind sechs: `pergament`, `forge`, `anime`, `fussball`, `wald` und
+`space`. Ein siebtes anzulegen dauert etwa eine halbe Stunde – hier steht, was
+dazugehört.
+
+**Bitte generisch bleiben.** Die mitgelieferten Themes sind an Genres angelehnt,
+nicht an Marken: keine Vereins- oder Filmnamen, keine geschützten Symbole, keine
+erfundenen Begriffe aus urheberrechtlich geschützten Werken. Sonst kann das
+Projekt nicht quelloffen bleiben.
+
 Ein Theme in Wortschmiede besteht aus **zwei Stellen**. Mehr nicht – weder Views noch
 Komponenten müssen angefasst werden.
 
@@ -61,7 +70,10 @@ cyber: {
   pixel: true,                       // schaltet image-rendering: pixelated
   icons: { home: 'anvil', learn: 'bookOpen', quiz: 'hammer', import: 'camera',
            settings: 'gears', good: 'spark', streak: 'flame' },
-  awardShape: 'ingot',               // Form der Auszeichnungen: ingot | belt | seal
+  awardShape: 'ingot',               // Form der Auszeichnungen (Icon-Schlüssel)
+  deco: 'anvil',                     // Silhouette am unteren Bildrand (optional)
+  decoColor: '#000',                 // Standard: schwarzer Schattenriss
+  decoOpacity: 0.5,
   lexicon: {
     appTitle: 'Dein Terminal',
     homeTab: 'Terminal', settingsTab: 'Config',
@@ -96,8 +108,13 @@ cyber: {
   Wer ein Motiv braucht, das noch fehlt, trägt es in `tools/build-icons.mjs`
   ein und lässt `npm run icons` laufen – das aktualisiert auch CREDITS.md.
 - `awardShape` bestimmt, wie die Auszeichnungen aussehen: `ingot` (Barren),
-  `belt` (Gürtel) oder `seal` (Wachssiegel). Es ist ein gewöhnlicher
+  `belt` (Gürtel), `seal` (Wachssiegel), `trophyCup` (Pokal), `runeStone`
+  (Runenstein) oder `starMedal` (Rangstern). Es ist ein gewöhnlicher
   Icon-Schlüssel, jedes andere Motiv geht also auch.
+- `deco` legt eine Silhouette an den unteren Bildrand – Amboss, Spielfeld,
+  Tanne, Raumschiff. Auch das ist ein Icon-Schlüssel; `decoColor` und
+  `decoOpacity` steuern, wie kräftig sie erscheint. Ohne `deco` bleibt der
+  Hintergrund ruhig (so wie im Pergament-Theme).
 - `awards` sind die fünf Auszeichnungen für ein vollständig gelerntes Deck.
   `name` steht im Abzeichen und im Erfolgsbanner, `short` in den Kacheln,
   `color` färbt das Motiv – keine Emojis, damit es auf jedem Gerät und in

@@ -6,16 +6,17 @@ worden – die App lädt zur Laufzeit nichts von fremden Servern nach.
 
 ## game-icons.net
 
-Thematische Motive: Amboss, Hammer, Barren, Wachssiegel, Gürtel, Bücher,
-Schriftrolle, Federkiel, Zahnräder, Kamera, Lorbeer, Funken, Sterne, Katana.
+Thematische Motive für alle Themes: Amboss, Hammer, Barren, Wachssiegel,
+Gürtel, Bücher, Schriftrolle, Federkiel, Zahnräder, Kamera, Lorbeer, Funken,
+Sterne, Katana, Fußball und Pokal, Eiche und Runenstein, Rakete und Planet.
 
 Lizenz: [Creative Commons BY 3.0](https://creativecommons.org/licenses/by/3.0/)
 Quelle: <https://game-icons.net>
 
 Autoren der verwendeten Icons:
 
-- **Lorc** – anvil, energy-arrow, flat-hammer, gears, laurel-crown, metal-bar, open-book, quill-ink, scroll-unfurled, spark-spirit, wax-seal
-- **Delapouite** – black-belt, book-cover, katana, photo-camera, sparkles, star-formation
+- **Lorc** – anvil, energy-arrow, flat-hammer, gears, laurel-crown, leaf-swirl, metal-bar, oak, open-book, pine-tree, quill-ink, ringed-planet, rocket, rune-stone, scroll-unfurled, spark-spirit, wax-seal
+- **Delapouite** – astronaut-helmet, black-belt, book-cover, bow-arrow, katana, photo-camera, soccer-ball, soccer-field, spaceship, sparkles, star-formation, star-medal, torch, trophy-cup, whistle
 
 Änderungen gegenüber dem Original: Das schwarze Hintergrundquadrat wurde
 entfernt und die Füllfarbe auf `currentColor` umgestellt, damit die Motive

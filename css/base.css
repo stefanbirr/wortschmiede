@@ -148,7 +148,7 @@ body[data-focus="1"] { padding-bottom: calc(20px + var(--safe-b)); }
   padding: 16px 14px 24px;
   animation: view-in .18s ease-out;
 }
-.view:focus { outline: none; }
+.view:focus, .view:focus-visible { outline: none; }   /* nur Sprungziel für Screenreader, kein sichtbarer Ring */
 @keyframes view-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
 .stack { display: flex; flex-direction: column; gap: 12px; }
@@ -211,7 +211,11 @@ input[type="text"], input[type="number"], select, textarea {
   border-radius: var(--radius);
   color: var(--ink);
 }
-input:focus-visible, select:focus-visible, textarea:focus-visible, .btn:focus-visible, a:focus-visible, [tabindex]:focus-visible {
+/* Der View-Container trägt tabindex nur als Sprungziel für Screenreader und
+   ist ausgenommen – sonst legt sich nach jeder Navigation ein Fokusring quer
+   über die Seite (gleiche Spezifität, die spätere Regel würde gewinnen). */
+input:focus-visible, select:focus-visible, textarea:focus-visible,
+.btn:focus-visible, a:focus-visible, [tabindex]:not(.view):focus-visible {
   outline: 3px solid var(--accent-2); outline-offset: 2px;
 }
 textarea { min-height: 160px; resize: vertical; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .85rem; }

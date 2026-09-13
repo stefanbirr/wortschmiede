@@ -55,7 +55,8 @@ Sprache vorbelegt und lässt sich pro Deck ändern.
 ## Auszeichnungen
 
 Steht **jede** Vokabel eines Decks auf einer Stufe, gibt es dafür eine
-Auszeichnung – vom Kupfer- bis zum Mithrilbarren. Es zählt die schwächste Karte:
+Auszeichnung – im Schmiede-Theme etwa vom Kupfer- bis zum Sternenstahlbarren.
+Es zählt die schwächste Karte:
 Eine einzige vergessene Vokabel hält das ganze Deck auf, sonst wäre die
 Auszeichnung geschenkt. Wie sie aussehen und heißen, hängt vom Theme ab (Barren,
 Wachssiegel oder Gürtelfarben).
@@ -82,11 +83,26 @@ Deko-Balken, sondern eine ehrliche Anzeige.
 
 ## Themes
 
-Mitgeliefert sind **Pergament** (heller Lesemodus, Vorgabe), **Schmiede**
-(mittelalterlich, Blockoptik) und **Anime** (Neon, Speedlines). Ein Theme bestimmt
-nicht nur Farben, sondern auch Begriffe („Schmiedegang" vs. „Trainingslauf"),
-Stufennamen, Motive und Klänge. Dieselbe Auszeichnung erscheint je nach Theme
-als **Barren**, als **Gürtel** oder als **Wachssiegel**. Ein eigenes Theme sind zwei Stellen
+Sechs Welten stehen bereit:
+
+| Theme | Stimmung | Ränge |
+|---|---|---|
+| **Pergament** (Vorgabe) | heller Lesemodus, Tinte und Papier | Wachssiegel |
+| **Schmiede** | Amboss, Glut, Blockoptik | Barren |
+| **Anime** | Neonlicht, Speedlines | Gürtel |
+| **Fußball** | Flutlicht, Rasenstreifen, Anpfiff | Pokale |
+| **Dunkler Wald** | Nebel zwischen alten Stämmen, Fackelschein | Runensteine |
+| **Weltraum** | Sternenfeld, Instrumentenlicht | Rangsterne |
+
+Ein Theme bestimmt nicht nur Farben, sondern auch die ganze Sprache der App: Aus
+„Deine Esse" wird „Deine Kabine" oder „Deine Brücke", aus „Feuer anfachen" wird
+„Anpfiff" oder „Startfreigabe", und die Fortschrittsstufen heißen einmal
+„Rohling bis Meisterklinge" und einmal „Neuzugang bis Kapitän". Dazu kommen
+Motive, Klänge und die Form der Auszeichnungen.
+
+Alle Themes sind bewusst generisch gehalten – keine Vereinsfarben, keine
+Markennamen, keine geschützten Symbole, damit das Projekt quelloffen bleiben
+kann. Ein eigenes Theme sind zwei Stellen
 im Code: [docs/THEMES.md](docs/THEMES.md).
 
 ## Grafiken
@@ -104,8 +120,26 @@ lädt keine externen Skripte, Fonts oder Analytics und schickt nichts irgendwohi
 Das Foto und der Chat bleiben beim KI-Tool der eigenen Wahl – die App sieht nur den
 Text, den man einfügt.
 
-Kehrseite: Browserdaten löschen bedeutet Vokabeln weg. Deshalb unter
-**Werkbank → Exportieren** regelmäßig eine Sicherungsdatei ziehen.
+### Was bei einem Update passiert
+
+Nichts. Der Speicher hängt an der Herkunft der Seite, nicht an der Version der
+Dateien: Ein Update tauscht nur HTML, JS und CSS aus, der Lernstand bleibt
+liegen. Neue Felder ergänzt die App beim Laden, ohne bestehende zu verlieren –
+und legt vor jeder Formatänderung eine Kopie des alten Standes an.
+
+Ist der gespeicherte Stand einmal beschädigt (etwa weil ein Speichervorgang bei
+vollem Speicher abbrach), startet die App **nicht** stillschweigend leer:
+Der Rohtext wird beiseitegelegt, die App meldet sich beim Start und bietet ihn
+als Datei an. In der Werkbank stehen alle solchen Kopien zum Herunterladen.
+
+Nach dem ersten Import bittet die App den Browser außerdem, den Speicher nicht
+automatisch zu räumen (`navigator.storage.persist()`). Ob er zustimmt, zeigt die
+Werkbank offen an – Chrome tut es meist erst, wenn die App zum Startbildschirm
+hinzugefügt wurde.
+
+Kehrseite bleibt: Browserdaten löschen bedeutet Vokabeln weg, und ein zweites
+Gerät hat seinen eigenen Bestand. Deshalb unter **Werkbank → Exportieren**
+regelmäßig eine Sicherungsdatei ziehen.
 
 ## Entwicklung
 

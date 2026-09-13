@@ -1,8 +1,11 @@
 /* ==========================================================================
-   Einprägen: Karteikarten in Ruhe durchgehen.
-   Bewusst ohne Zeitdruck und ohne Bewertungszwang – hier geht es um den
-   Erstkontakt. Wer eine Vokabel schon sicher hat, kann sie direkt als
-   gekonnt markieren, dann startet sie in der Abfrage nicht bei null.
+   Durchblättern: Karteikarten in Ruhe ansehen.
+
+   Der Erstkontakt mit einer neuen Vokabel passiert inzwischen in der Abfrage
+   selbst – sie wird dort gezeigt, bevor sie gefragt wird. Diese Ansicht bleibt
+   für das, was eine Abfrage nicht leistet: vor einer Arbeit einmal komplett
+   durch den Stapel blättern, ohne Bewertung und ohne Zeitdruck. Wer eine
+   Vokabel schon sicher hat, markiert sie hier als gekonnt.
    ========================================================================== */
 
 import { el, shuffle, humanDue } from '../util.js';

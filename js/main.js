@@ -18,8 +18,8 @@ applyTheme(getSettings().theme);
 
 defineRoutes([
   { path: '/', render: home.render, tab: '/', title: 'Wortschmiede', root: true },
-  { path: '/lernen', render: learn.render, tab: '/lernen', title: 'Einprägen', root: true },
-  { path: '/lernen/:deckId', render: learn.render, tab: '/lernen', title: 'Einprägen' },
+  { path: '/lernen', render: learn.render, tab: '/', title: 'Durchblättern', root: true },
+  { path: '/lernen/:deckId', render: learn.render, tab: '/', title: 'Durchblättern' },
   { path: '/schmieden', render: quiz.render, tab: '/schmieden', title: 'Abfrage', root: true },
   { path: '/schmieden/:deckId', render: quiz.render, tab: '/schmieden', title: 'Abfrage' },
   { path: '/import', render: importView.render, tab: '/import', title: 'Import', root: true },
@@ -48,6 +48,22 @@ function renderTopStats() {
     el('span', { title: t('streak') }, iconEl('streak', { size: 14 }), el('b', {}, String(p.streak || 0))),
   );
 }
+
+/*
+ * Die Navigationsleiste ist fixiert und je nach Gerät verschieden hoch
+ * (Safe-Area am unteren Rand, Systemschriftgröße). Ihre echte Höhe geht als
+ * --tabbar-h ins CSS – mit einem festen Wert verschwand der letzte Abschnitt
+ * einer Seite hinter der Leiste.
+ */
+const tabbar = $('#tabbar');
+const syncTabbarHeight = () => {
+  const h = tabbar.getBoundingClientRect().height;
+  if (h > 0) document.documentElement.style.setProperty('--tabbar-h', `${Math.round(h)}px`);
+};
+syncTabbarHeight();
+if ('ResizeObserver' in window) new ResizeObserver(syncTabbarHeight).observe(tabbar);
+window.addEventListener('orientationchange', () => setTimeout(syncTabbarHeight, 200));
+window.addEventListener('resize', syncTabbarHeight);
 
 $('#btn-back').addEventListener('click', () => back());
 subscribe(() => renderTopStats());

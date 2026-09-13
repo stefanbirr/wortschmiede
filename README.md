@@ -31,12 +31,10 @@ Details und der Prompt zum Nachlesen: [docs/PROMPT.md](docs/PROMPT.md).
 
 ## Die zwei Lernmodi
 
-**Einprägen** – Karteikarten in Ruhe durchblättern. Tippen dreht die Karte um, Wischen
-blättert weiter, Vorlesen per Sprachausgabe, Beispielsätze inklusive. Kein Zeitdruck,
-keine Bewertung. Wer eine Vokabel schon kann, markiert sie mit *Sitzt schon* und
-überspringt die Anfängerstufen.
-
-**Abfrage** – die eigentliche Übung, mit wechselnden Aufgabenformaten:
+**Abfrage** – der Hauptmodus. Eine Vokabel, die man noch nie gesehen hat, wird
+zuerst **gezeigt** (Wort, Übersetzung, Beispielsatz, auf Wunsch vorgelesen) und
+erst danach gefragt – Einprägen und Abfragen liegen also im selben Durchgang.
+Danach wechseln die Aufgabenformate:
 
 | Format | Wann | Warum |
 |---|---|---|
@@ -46,7 +44,14 @@ keine Bewertung. Wer eine Vokabel schon kann, markiert sie mit *Sitzt schon* und
 | **Durchblättern** (wischen) | sitzende Vokabeln | schnelle Runden, Selbsteinschätzung |
 | **Hören** | gelegentlich | Aussprache mit dem Wort koppeln |
 
-Richtig getroffen gibt Funken und einen Hammerschlag, daneben zerschneidet die Karte.
+Richtig getroffen gibt Funken und einen Hammerschlag, daneben zerschneidet die
+Karte. Die Auflösung bleibt immer stehen, bis man weitertippt: Gerade beim
+Ankreuzen ist der Blick auf das richtige Wort der eigentliche Lerneffekt.
+
+**Durchblättern** – der ruhige Zweitmodus, erreichbar von der Startseite und aus
+jedem Deck. Karteikarten ohne Bewertung und ohne Zeitdruck, zum Beispiel am Abend
+vor einer Arbeit. Wer eine Vokabel schon sicher kann, markiert sie mit
+*Sitzt schon* und überspringt die Anfängerstufen.
 
 Bei Latein und Altgriechisch dreht sich die Richtung um: Dort wird ins Deutsche
 übersetzt statt in die Zielsprache geschrieben. Das wird beim Import aus der

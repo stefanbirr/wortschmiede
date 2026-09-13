@@ -204,6 +204,13 @@ function sessionView(deck) {
       const ok = grade !== GRADE.AGAIN;
       // Aufgabe einfrieren – nach der Antwort soll niemand weitertippen.
       for (const node of host.querySelectorAll('input, button, select')) node.disabled = true;
+      /*
+       * Der Buchstabenvorrat und die Hilfsknöpfe haben ihren Zweck erfüllt und
+       * kosten auf kleinen Geräten den halben Bildschirm – weg damit, damit
+       * Auflösung und Weiter-Knopf ohne Scrollen zusammen sichtbar sind.
+       * Was gelegt wurde, bleibt stehen.
+       */
+      for (const node of host.querySelectorAll('.letters-pool, .task-actions')) node.hidden = true;
       const card = host.querySelector('.quiz-prompt, .swipe-card, .flipcard');
       if (ok) {
         sfx('good'); buzz(12); sparks(card, verdict === 'exact' ? 18 : 10); hit(card);
@@ -233,9 +240,10 @@ function sessionView(deck) {
        */
       let advanced = false;
       const advance = () => { if (advanced) return; advanced = true; done(); };
-      const cont = el('button.btn.btn--primary.btn--block', { style: 'margin-top:10px', onclick: advance }, 'Weiter');
+      const cont = el('button.btn.btn--primary.btn--block.quiz-continue', { style: 'margin-top:10px', onclick: advance }, 'Weiter');
       host.append(box, cont);
-      box.scrollIntoView?.({ block: 'nearest', behavior: 'smooth' });
+      // Auflösung ins Bild holen; der Knopf bleibt durch position:sticky ohnehin sichtbar.
+      requestAnimationFrame(() => box.scrollIntoView?.({ block: 'nearest', behavior: 'smooth' }));
       cont.focus({ preventScroll: true });
     }
 
@@ -357,7 +365,7 @@ function renderType(task, deck, submit) {
   return el('div', {},
     promptBlock(task, deck),
     el('div.typeline', {}, input, el('button.btn.btn--primary', { onclick: go }, '🔨')),
-    el('div.row', { style: 'margin-top:8px' },
+    el('div.row.task-actions', { style: 'margin-top:8px' },
       el('button.btn.btn--sm.btn--ghost', { onclick: () => submit(task, { value: '' }) }, 'Weiß ich nicht'),
       task.solution.length > 3
         ? el('button.btn.btn--sm.btn--ghost', {
@@ -439,7 +447,7 @@ function renderLetters(task, deck, submit) {
     promptBlock(task, deck),
     slots,
     pool,
-    el('div.row', { style: 'margin-top:10px' },
+    el('div.row.task-actions', { style: 'margin-top:10px' },
       el('button.btn.btn--sm.btn--ghost', { onclick: reset }, svgIcon('rotateCcw', { size: 15 }), 'Leeren'),
       el('button.btn.btn--sm.btn--ghost', { onclick: () => submit(task, { value: '' }) }, 'Aufgeben')),
   );

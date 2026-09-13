@@ -37,7 +37,7 @@ export function render() {
 
   root.append(el('div.row.row--equal', {},
     el('button.btn.btn--primary', { style: 'flex:1 1 46%', onclick: () => navigate('/schmieden') }, iconEl('quiz', { size: 20 }), t('quizStart')),
-    el('button.btn', { style: 'flex:1 1 46%', onclick: () => navigate('/lernen') }, iconEl('learn', { size: 20 }), t('learn')),
+    el('button.btn', { style: 'flex:1 1 46%', onclick: () => navigate('/lernen') }, iconEl('learn', { size: 20 }), 'Durchblättern'),
   ));
 
   const list = el('div.stack');

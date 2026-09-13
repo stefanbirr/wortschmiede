@@ -49,7 +49,7 @@ export function render(params) {
 
   root.append(el('div.row.row--equal', {},
     el('button.btn.btn--primary', { style: 'flex:1 1 46%', onclick: () => navigate(`/schmieden/${deck.id}`) }, iconEl('quiz', { size: 20 }), t('quizStart')),
-    el('button.btn', { style: 'flex:1 1 46%', onclick: () => navigate(`/lernen/${deck.id}`) }, iconEl('learn', { size: 20 }), t('learn'))));
+    el('button.btn', { style: 'flex:1 1 46%', onclick: () => navigate(`/lernen/${deck.id}`) }, iconEl('learn', { size: 20 }), 'Durchblättern')));
 
   const search = el('input', { type: 'text', placeholder: 'Vokabel suchen …', 'aria-label': 'Vokabel suchen' });
   const list = el('div.vlist');

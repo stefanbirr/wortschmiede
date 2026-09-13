@@ -276,14 +276,14 @@ export function applyTheme(id) {
     root.style.removeProperty('--deco-opacity');
   }
   // Tab-Icons folgen dem Theme
-  const map = { '/': 'home', '/lernen': 'learn', '/schmieden': 'quiz', '/import': 'import', '/einstellungen': 'settings' };
+  const map = { '/': 'home', '/schmieden': 'quiz', '/import': 'import', '/einstellungen': 'settings' };
   for (const a of document.querySelectorAll('.tabbar a')) {
     const key = map[a.dataset.tab];
     const slot = a.querySelector('.tabbar__icon');
     if (!key || !slot) continue;
     slot.replaceChildren(svgIcon(theme.icons[key], { size: 22 }));
   }
-  const labels = { '/': 'homeTab', '/lernen': 'learn', '/schmieden': 'quiz', '/einstellungen': 'settingsTab' };
+  const labels = { '/': 'homeTab', '/schmieden': 'quiz', '/einstellungen': 'settingsTab' };
   for (const [tab, key] of Object.entries(labels)) {
     const node = document.querySelector(`.tabbar a[data-tab="${tab}"] span:last-child`);
     if (node && theme.lexicon[key]) node.textContent = theme.lexicon[key];

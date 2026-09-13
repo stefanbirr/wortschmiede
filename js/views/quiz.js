@@ -2,6 +2,7 @@
    Abfrage ("Schmieden").
 
    Aufgabenformate wechseln bewusst durch (siehe session.js):
+     Vorstellen                 – neue Vokabel wird erst gezeigt, dann gefragt
      Erkennen (Multiple Choice) – Einstieg bei neuen Vokabeln
      Buchstaben legen           – Bruecke zur freien Produktion
      Schmieden (tippen)         – staerkster Abrufeffekt, das Kernformat
@@ -9,10 +10,10 @@
      Hören                      – Aussprache koppeln (wenn Stimme vorhanden)
    ========================================================================== */
 
-import { el, humanDue, shuffle } from '../util.js';
+import { el, humanDue } from '../util.js';
 import { listDecks, listCards, getDeck, getSettings, deckAward } from '../store.js';
 import { GRADE, forgeStage, previewIntervals } from '../fsrs.js';
-import { buildQueue, buildTask, gradeAnswer, applyGrade, requeue, KIND_LABEL } from '../session.js';
+import { buildQueue, buildTask, gradeAnswer, applyGrade, requeue, effectiveDirection, KIND_LABEL } from '../session.js';
 import { speak, speechAvailable, sfx, buzz, sparks, hit } from '../fx.js';
 import { t, stageName, award, iconEl } from '../themes.js';
 import { bar, empty, stageDots, toast, medal } from '../ui.js';
@@ -76,6 +77,8 @@ function sessionView(deck) {
     // Anlaeufen ist Schluss, FSRS legt sie ohnehin zeitnah wieder vor.
     const retries = new Map();
     const MAX_RETRIES = 2;
+    // Welche neuen Karten in dieser Sitzung schon vorgestellt wurden.
+    const introShown = new Set();
     let index = 0;
 
     // Auszeichnungsstand vor der Sitzung merken, um Aufstiege zu feiern.
@@ -96,7 +99,15 @@ function sessionView(deck) {
 
     const onKey = (e) => {
       const task = host.__task;
-      if (!task || host.__locked) return;
+      if (host.__locked) {
+        // Auflösung steht: Enter oder Leertaste blättern weiter.
+        if (e.key === 'Enter' || e.key === ' ') {
+          const cont = host.querySelector('.btn--block');
+          if (cont) { e.preventDefault(); cont.click(); }
+        }
+        return;
+      }
+      if (!task) return;
       if ((task.kind === 'choice' || task.kind === 'listen') && /^[1-4]$/.test(e.key)) {
         host.querySelectorAll('.choice')[Number(e.key) - 1]?.click();
       }
@@ -118,6 +129,18 @@ function sessionView(deck) {
     function nextTask() {
       if (index >= queue.length) return finish();
       const card = queue[index];
+
+      /*
+       * Eine Vokabel, die man noch nie gesehen hat, kann man nicht wissen –
+       * sie abzufragen wäre Raten. Deshalb wird sie erst einmal gezeigt
+       * (früher der eigene Modus "Einprägen"), und direkt danach kommt die
+       * erste Aufgabe zur selben Karte.
+       */
+      if (!card.srs.introduced && !introShown.has(card.id)) {
+        introShown.add(card.id);
+        showIntro(card);
+        return;
+      }
       const task = buildTask(card, pool, { speech: speechAvailable() });
       host.__task = task;
       host.__locked = false;
@@ -127,6 +150,35 @@ function sessionView(deck) {
       if (task.kind === 'listen') setTimeout(() => speak(task.speakText, langFor(task, deck)), 250);
       const focusTarget = host.querySelector('input[type="text"]');
       focusTarget?.focus({ preventScroll: true });
+    }
+
+    /** Neue Vokabel in Ruhe zeigen – ohne Bewertung, ohne Zeitdruck. */
+    function showIntro(card) {
+      host.__task = null;
+      host.__locked = false;
+      host.innerHTML = '';
+      const production = effectiveDirection(deck.id === 'alle' ? getDeck(card.deckId) : deck) !== 'recognition';
+      const frage = production ? card.front : card.back;
+      const loesung = production ? card.back : card.front;
+      const lang = production ? (deck.targetLanguage || 'en') : (deck.sourceLanguage || 'de');
+
+      const weiter = el('button.btn.btn--primary.btn--block', { style: 'margin-top:12px', onclick: nextTask }, 'Verstanden');
+      host.append(
+        el('div.quiz-prompt', {},
+          el('div.quiz-prompt__kind', {}, 'Neue Vokabel'),
+          el('div.quiz-prompt__word', {}, frage),
+          el('div.intro__answer', {}, loesung),
+          card.hint ? el('div.quiz-prompt__hint', {}, card.hint) : null,
+          card.example ? el('div.small.muted', { style: 'margin-top:10px' }, `„${card.example}“`) : null,
+          card.exampleTranslation ? el('div.small.muted', {}, card.exampleTranslation) : null,
+          speechAvailable()
+            ? el('button.btn.btn--sm', { style: 'margin-top:12px', onclick: () => speak(loesung, lang) }, 'Vorlesen')
+            : null),
+        weiter,
+      );
+      updateHead();
+      if (getSettings().speech) speak(loesung, lang);
+      weiter.focus({ preventScroll: true });
     }
 
     function submit(task, input) {
@@ -173,20 +225,18 @@ function sessionView(deck) {
         speechAvailable() ? el('button.btn.btn--sm', { style: 'margin-top:8px', onclick: () => speak(task.solution, langFor(task, deck, true)), 'aria-label': 'Vorlesen' }, svgIcon('volume2', { size: 16 })) : null,
       );
 
-      // Tippen und Auto-Weiter duerfen sich nicht ueberholen.
+      /*
+       * Bewusst kein automatisches Weiterspringen: Auch bei einer richtigen
+       * Antwort soll die Lösung einen Moment stehen bleiben. Gerade beim
+       * Ankreuzen ist dieser Blick auf das richtige Wort der eigentliche
+       * Lerneffekt – wer sofort zur nächsten Karte geschoben wird, liest ihn nie.
+       */
       let advanced = false;
-      const advance = () => { if (advanced) return; advanced = true; clearTimeout(timer); done(); };
-
+      const advance = () => { if (advanced) return; advanced = true; done(); };
       const cont = el('button.btn.btn--primary.btn--block', { style: 'margin-top:10px', onclick: advance }, 'Weiter');
-      let timer = null;
       host.append(box, cont);
       box.scrollIntoView?.({ block: 'nearest', behavior: 'smooth' });
-
-      if (ok && verdict === 'exact' && task.kind !== 'swipe') {
-        timer = setTimeout(advance, 900);   // richtig und eindeutig: kurz zeigen, dann weiter
-      } else {
-        cont.focus({ preventScroll: true });
-      }
+      cont.focus({ preventScroll: true });
     }
 
     function finish() {
@@ -321,60 +371,78 @@ function renderLetters(task, deck, submit) {
   const target = task.solution;
   const slots = el('div.letters-slots', { 'aria-live': 'polite' });
   const pool = el('div.letters-pool');
-  let built = '';
 
-  const sync = () => {
+  /*
+   * Die Kacheln werden EINMAL gemischt und gebaut und behalten danach ihren
+   * Platz; verbrauchte werden nur ausgeblendet. Vorher wurde der Vorrat bei
+   * jedem Antippen neu erzeugt und dabei neu gemischt – die Buchstaben sprangen
+   * unter dem Finger herum und man musste jedes Mal neu suchen.
+   */
+  const tiles = task.tiles.map(({ ch }, i) => {
+    const node = el('button.tile' + (ch === ' ' ? '.tile--space' : ''), {
+      onclick: () => place(i),
+    }, ch === ' ' ? '␣' : ch);
+    pool.append(node);
+    return { ch, node };
+  });
+  const placed = [];                       // Indizes in der Reihenfolge des Legens
+  const built = () => placed.map((i) => tiles[i].ch).join('');
+
+  function place(i) {
+    if (placed.includes(i)) return;
+    placed.push(i);
+    tiles[i].node.classList.add('is-used');
+    sync();
+  }
+
+  function take(pos) {
+    const [i] = placed.splice(pos, 1);
+    tiles[i].node.classList.remove('is-used');
+    sync();
+  }
+
+  function reset() {
+    while (placed.length) {
+      const i = placed.pop();
+      tiles[i].node.classList.remove('is-used');
+    }
+    sync();
+  }
+
+  function sync() {
     slots.innerHTML = '';
-    if (!built) slots.append(el('span.small.muted', {}, 'Buchstaben antippen'));
-    [...built].forEach((ch, i) => {
+    if (!placed.length) slots.append(el('span.small.muted', {}, 'Buchstaben antippen'));
+    placed.forEach((i, pos) => {
+      const ch = tiles[i].ch;
       slots.append(el('button.tile' + (ch === ' ' ? '.tile--space' : ''), {
-        onclick: () => { built = built.slice(0, i) + built.slice(i + 1); redrawPool(); sync(); },
+        onclick: () => take(pos),
       }, ch === ' ' ? '␣' : ch));
     });
-    if (built.length === target.length) check();
-  };
-
-  const redrawPool = () => {
-    const rest = countRemaining(target, built);
-    pool.innerHTML = '';
-    for (const [ch, n] of rest) {
-      for (let k = 0; k < n; k++) {
-        pool.append(el('button.tile' + (ch === ' ' ? '.tile--space' : ''), {
-          onclick: () => { built += ch; sync(); redrawPool(); },
-        }, ch === ' ' ? '␣' : ch));
-      }
-    }
-  };
+    if (placed.length === tiles.length) check();
+  }
 
   function check() {
     task.attempts++;
-    if (built.trim() === target.trim()) submit(task, { value: built });
+    const value = built();
+    if (value.trim() === target.trim()) submit(task, { value });
     else {
       slots.animate?.([{ transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'none' }], 220);
       sfx('bad');
-      if (task.attempts >= 2) submit(task, { value: built });
-      else { built = ''; sync(); redrawPool(); toast('Noch nicht – zweiter Versuch.'); }
+      if (task.attempts >= 2) submit(task, { value });
+      else { reset(); toast('Noch nicht – zweiter Versuch.'); }
     }
   }
 
   sync();
-  redrawPool();
 
   return el('div', {},
     promptBlock(task, deck),
     slots,
     pool,
     el('div.row', { style: 'margin-top:10px' },
-      el('button.btn.btn--sm.btn--ghost', { onclick: () => { built = ''; sync(); redrawPool(); } }, svgIcon('rotateCcw', { size: 15 }), 'Leeren'),
+      el('button.btn.btn--sm.btn--ghost', { onclick: reset }, svgIcon('rotateCcw', { size: 15 }), 'Leeren'),
       el('button.btn.btn--sm.btn--ghost', { onclick: () => submit(task, { value: '' }) }, 'Aufgeben')),
   );
-}
-
-function countRemaining(target, built) {
-  const counts = new Map();
-  for (const ch of target) counts.set(ch, (counts.get(ch) || 0) + 1);
-  for (const ch of built) counts.set(ch, (counts.get(ch) || 0) - 1);
-  return shuffle([...counts.entries()].filter(([, n]) => n > 0));
 }
 
 function renderSwipe(task, deck, submit) {

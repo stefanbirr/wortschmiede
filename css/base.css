@@ -39,11 +39,15 @@
   --deco: none;               /* dekorative Silhouette am unteren Rand */
   --tap: 48px;
   --safe-b: env(safe-area-inset-bottom, 0px);
+  --tabbar-h: 76px;           /* wird von main.js real gemessen */
 }
 
 /* ---- Reset ------------------------------------------------------------- */
 *, *::before, *::after { box-sizing: border-box; }
-html, body { height: 100%; }
+/* min-height statt height: Mit fixer Höhe deckelt der Body das Dokument, und
+   sein unteres Padding verschwindet beim Scrollen – der letzte Abschnitt lag
+   dann hinter der Navigationsleiste. */
+html, body { min-height: 100%; }
 body {
   margin: 0;
   font-family: var(--font-body);
@@ -55,7 +59,6 @@ body {
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: contain;
-  padding-bottom: calc(72px + var(--safe-b));
 }
 h1, h2, h3, h4 {
   font-family: var(--font-display);
@@ -82,7 +85,7 @@ svg { flex: none; vertical-align: middle; }
   pointer-events: none; z-index: 0;
 }
 .forge-glow::after {
-  content: ''; position: absolute; left: 50%; bottom: calc(78px + var(--safe-b));
+  content: ''; position: absolute; left: 50%; bottom: calc(var(--tabbar-h) + 8px);
   width: min(280px, 58vw); height: 22vh; transform: translateX(-50%);
   background: var(--deco) no-repeat bottom center / contain;
   opacity: var(--deco-opacity, .16);
@@ -122,7 +125,7 @@ body[data-focus="1"] .forge-glow::after { bottom: 12px; opacity: calc(var(--deco
 
 .tabbar {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
-  display: grid; grid-template-columns: repeat(5, 1fr);
+  display: grid; grid-template-columns: repeat(4, 1fr);
   background: color-mix(in srgb, var(--bg) 92%, black);
   border-top: 2px solid var(--line);
   padding-bottom: var(--safe-b);
@@ -139,13 +142,15 @@ body[data-focus="1"] .forge-glow::after { bottom: 12px; opacity: calc(var(--deco
 /* Fokus-Modus: waehrend einer laufenden Abfrage verschwindet die Tabbar,
    sonst liegt sie ueber dem "Weiter"-Button. Ausstieg ueber das ✕ oben. */
 body[data-focus="1"] .tabbar { display: none; }
-body[data-focus="1"] { padding-bottom: calc(20px + var(--safe-b)); }
+body[data-focus="1"] .view { padding-bottom: calc(20px + var(--safe-b)); }
 
 /* ---- View-Container ---------------------------------------------------- */
 .view {
   position: relative; z-index: 1;
   max-width: 720px; margin: 0 auto;
-  padding: 16px 14px 24px;
+  /* Unten so viel Luft, dass der letzte Abschnitt über der fixierten Leiste
+     endet. Deren Höhe schwankt je nach Gerät und steckt in --tabbar-h. */
+  padding: 16px 14px calc(var(--tabbar-h) + 24px);
   animation: view-in .18s ease-out;
 }
 .view:focus, .view:focus-visible { outline: none; }   /* nur Sprungziel für Screenreader, kein sichtbarer Ring */
@@ -376,6 +381,14 @@ textarea { min-height: 160px; resize: vertical; font-family: ui-monospace, SFMon
 .quiz-prompt__kind { font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); }
 .quiz-prompt__word { font-family: var(--font-display); font-size: clamp(1.4rem, 6.5vw, 2rem); margin: 8px 0 4px; text-shadow: var(--display-shadow); }
 .quiz-prompt__hint { font-size: .82rem; color: var(--ink-dim); }
+/* Vorstellkarte: die Lösung steht direkt unter der Frage, klar abgesetzt */
+.intro__answer {
+  margin-top: 6px; padding-top: 10px;
+  border-top: 2px dashed var(--line);
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 6vw, 1.8rem);
+  color: var(--accent-2);
+}
 
 .choices { display: grid; gap: 8px; }
 .choice {
@@ -401,7 +414,9 @@ textarea { min-height: 160px; resize: vertical; font-family: ui-monospace, SFMon
 /* Buchstaben-Schmiede */
 .letters-slots {
   display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
-  min-height: 68px; padding: 8px; margin-bottom: 10px;
+  /* Platz für genau eine Kachelreihe (56px) plus Innenabstand – sonst wächst
+     die Zeile beim ersten Buchstaben und schiebt den Vorrat nach unten. */
+  min-height: 76px; padding: 8px; margin-bottom: 10px; align-content: center;
   background: var(--bg-sunken); border: 2px dashed var(--line); border-radius: var(--radius);
 }
 .letters-pool { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
@@ -436,7 +451,7 @@ textarea { min-height: 160px; resize: vertical; font-family: ui-monospace, SFMon
 @keyframes hit { 40% { transform: scale(1.06) rotate(-1deg); } }
 
 /* ---- Toast / Modal ----------------------------------------------------- */
-.toast-host { position: fixed; left: 0; right: 0; bottom: calc(80px + var(--safe-b)); z-index: 60; display: flex; flex-direction: column; align-items: center; gap: 6px; pointer-events: none; }
+.toast-host { position: fixed; left: 0; right: 0; bottom: calc(var(--tabbar-h) + 12px); z-index: 60; display: flex; flex-direction: column; align-items: center; gap: 6px; pointer-events: none; }
 .toast {
   background: var(--bg-elev); border: 2px solid var(--accent); border-radius: var(--radius);
   padding: 9px 14px; font-size: .85rem; box-shadow: var(--shadow-card);
@@ -487,6 +502,6 @@ textarea { min-height: 160px; resize: vertical; font-family: ui-monospace, SFMon
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
 @media (min-width: 700px) {
-  body { padding-bottom: 24px; }
+  .view { padding-bottom: 24px; }
   .tabbar { position: sticky; top: auto; bottom: 0; border-radius: 0; }
 }

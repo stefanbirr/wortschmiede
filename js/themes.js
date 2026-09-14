@@ -288,10 +288,16 @@ export function applyTheme(id) {
     const node = document.querySelector(`.tabbar a[data-tab="${tab}"] span:last-child`);
     if (node && theme.lexicon[key]) node.textContent = theme.lexicon[key];
   }
+  // Die Browserleiste soll die Farbe der Kopfleiste tragen, nicht die des
+  // Seitenhintergrunds - sonst bleibt oben ein andersfarbiger Streifen stehen.
+  // Wir lesen die gerechnete Farbe der Leiste ab statt --topbar-bg: so kommt
+  // immer ein rgb() heraus, auch wenn ein Theme den Wert einmal ausrechnen laesst.
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) {
-    const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
-    if (bg) meta.setAttribute('content', bg);
+    const bar = document.querySelector('.topbar');
+    const styles = getComputedStyle(document.documentElement);
+    const bg = (bar && getComputedStyle(bar).backgroundColor) || styles.getPropertyValue('--bg').trim();
+    if (bg && bg !== 'rgba(0, 0, 0, 0)') meta.setAttribute('content', bg);
   }
   return theme;
 }

@@ -7,6 +7,7 @@
 
 /* ---------- 1) FORGE – mittelalterliche Schmiede in Blockoptik ---------- */
 [data-theme="forge"] {
+  --topbar-bg: #120e0b;
   --bg: #15100d;
   --bg-elev: #241a14;
   --bg-sunken: #100b08;
@@ -65,6 +66,7 @@
 
 /* ---------- 2) ANIME – helles Shonen-Trainingslager --------------------- */
 [data-theme="anime"] {
+  --topbar-bg: #120c1e;
   --bg: #150e22;
   --bg-elev: #241640;
   --bg-sunken: #0f0a1c;
@@ -141,6 +143,14 @@
   --brand-mark: linear-gradient(180deg, #c98b2e, #9a5b1f);
 }
 [data-theme="pergament"] { --frame: inset 0 1px 0 var(--bevel-light); --deco: none; }
+/* Als einziges helles Theme braucht Pergament eine eigene Kopfleiste: sie
+   reicht unter die Statusleiste, deren Symbole das Geraet hell zeichnet.
+   Dunkles Leder ueber hellem Papier - Uhrzeit und Akku bleiben lesbar. */
+[data-theme="pergament"] {
+  --topbar-bg: #3a2c1c;
+  --topbar-ink: #f6ecd9;
+  --topbar-dim: #cbb790;
+}
 /* runde Ecken brauchen etwas mehr Innenabstand, sonst klebt der Text an der Rundung */
 [data-theme="pergament"] .panel { padding: 16px 18px; }
 [data-theme="pergament"] .btn { padding: 10px 20px; }
@@ -149,6 +159,7 @@
 
 /* ---------- 4) FUSSBALL – Flutlicht über nassem Rasen ------------------- */
 [data-theme="fussball"] {
+  --topbar-bg: #091d13;
   --bg: #0a2116;
   --bg-elev: #123a25;
   --bg-sunken: #06190f;
@@ -189,6 +200,7 @@
 
 /* ---------- 5) DUNKLER WALD – Nebel, Rinde, Fackelschein ---------------- */
 [data-theme="wald"] {
+  --topbar-bg: #09110e;
   --bg: #0a1310;
   --bg-elev: #16241d;
   --bg-sunken: #060d0a;
@@ -231,6 +243,7 @@
 
 /* ---------- 6) WELTRAUM – Sternenfeld und Instrumentenlicht ------------- */
 [data-theme="space"] {
+  --topbar-bg: #04060d;
   --bg: #05070f;
   --bg-elev: #0e1526;
   --bg-sunken: #02040a;

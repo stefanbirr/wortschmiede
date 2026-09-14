@@ -19,6 +19,7 @@ Ein neues Theme setzt sie unter seinem Selektor neu:
 
 ```css
 [data-theme="cyber"] {
+  --topbar-bg: #04060c;
   --bg: #06080f;
   --bg-elev: #0e1424;
   --bg-sunken: #04060c;
@@ -47,6 +48,7 @@ Wichtige Tokens:
 | Token | Wirkung |
 |---|---|
 | `--bg`, `--bg-elev`, `--bg-sunken` | Grundflächen, Panels, vertiefte Felder |
+| `--topbar-bg`, `--topbar-ink`, `--topbar-dim` | Kopfleiste – **Pflicht**, siehe unten |
 | `--ink`, `--ink-dim`, `--ink-faint` | Textfarben nach Wichtigkeit |
 | `--accent`, `--accent-2`, `--accent-ink` | Aktionsfarben und Text darauf |
 | `--radius`, `--radius-lg` | eckig (Pixel-Look) oder rund (Anime-Look) |
@@ -56,6 +58,17 @@ Wichtige Tokens:
 | `--glow` | Lichtstimmung hinter allem |
 | `--deco` | dekorative Silhouette am unteren Rand (`--deco-opacity` regelt die Stärke) |
 | `--font-display`, `--display-transform`, `--display-spacing`, `--display-shadow` | Überschriften-Charakter |
+
+### Die Kopfleiste ist Pflicht
+
+Auf dem Telefon reicht die Seite bis unter die Statusleiste, damit der Rand oben
+die Themenfarbe trägt statt eines fremden Streifens. Die Uhr, das Netz- und das
+Akkusymbol zeichnet das Gerät dort **immer hell** – deshalb braucht jedes Theme
+ein `--topbar-bg`, das dunkel genug für weiße Symbole ist (Kontrast mindestens
+4,5:1 gegen Weiß). Ein Test in `test/themes.test.js` prüft das.
+
+Helle Themes setzen zusätzlich `--topbar-ink` und `--topbar-dim` auf helle Töne,
+sonst steht dunkle Schrift auf dunklem Leder – so macht es `pergament`.
 
 Farben immer als Token setzen. Wer im Theme zusätzlich Komponenten anpassen will,
 schreibt gezielte Regeln wie `[data-theme="cyber"] .btn { … }` – aber sparsam.

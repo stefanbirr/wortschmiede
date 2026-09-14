@@ -54,3 +54,20 @@ test('Namen und Kurzbeschreibungen sind gesetzt', () => {
     assert.equal(THEMES[id].id, id);
   }
 });
+
+test('jedes Theme färbt die Kopfleiste dunkel genug für die Statusleiste', async () => {
+  // Die Kopfleiste reicht unter die Uhr des Geräts; deren Symbole zeichnet iOS
+  // dort immer hell. Ein Theme ohne eigenen Wert fiele auf ein color-mix()
+  // zurück, das als theme-color nicht überall zulässig ist.
+  const { readFile } = await import('node:fs/promises');
+  const css = await readFile(new URL('../css/themes.css', import.meta.url), 'utf8');
+  for (const id of ids) {
+    const block = css.match(new RegExp(`\\[data-theme="${id}"\\][^{]*\\{[^}]*--topbar-bg:\\s*(#[0-9a-f]{6})`, 'i'));
+    assert.ok(block, `${id}: --topbar-bg fehlt in css/themes.css`);
+    const [r, g, b] = [1, 3, 5].map((i) => parseInt(block[1].slice(i, i + 2), 16) / 255)
+      .map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+    const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    const kontrast = 1.05 / (lum + 0.05);
+    assert.ok(kontrast >= 4.5, `${id}: ${block[1]} trägt weiße Symbole nur mit Kontrast ${kontrast.toFixed(2)}`);
+  }
+});
